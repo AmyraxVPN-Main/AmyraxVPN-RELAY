@@ -614,6 +614,23 @@ footer { margin-top:100px; padding:32px 0; border-top:1px solid rgba(255,255,255
 .preset-btn.clear { color:var(--c); border:1px solid rgba(255,0,94,0.3); background:rgba(255,0,94,0.04); }
 .preset-btn.clear:hover { background:rgba(255,0,94,0.1); }
 
+/* ══ LOCKED MODE STYLES ══ */
+.locked-notice {
+  display:none; background:rgba(0,245,228,0.04); border:1px solid rgba(0,245,228,0.2);
+  border-radius:var(--rs); padding:12px 16px; margin-bottom:10px;
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:rgba(0,245,228,0.7);
+  align-items:center; gap:10px; flex-wrap:wrap;
+}
+.locked-notice.show { display:flex; }
+.lock-ico { font-size:16px; }
+.lock-ip-badge {
+  background:rgba(0,245,228,0.08); border:1px solid rgba(0,245,228,0.25);
+  border-radius:6px; padding:3px 10px; font-size:10px; color:var(--a); letter-spacing:1px;
+  direction:ltr; font-family:'JetBrains Mono',monospace;
+}
+.snita[readonly] { opacity:.55; cursor:not-allowed; border-color:rgba(0,245,228,0.1) !important; }
+.snita[readonly]:focus { box-shadow:none; border-color:rgba(0,245,228,0.1) !important; background:rgba(0,245,228,0.015) !important; }
+
 @media(max-width:768px){
   .ch-inner{ flex-direction:column; align-items:stretch; gap:14px; }
   .ch-flag{ display:flex; align-items:center; justify-content:center; }
@@ -621,28 +638,55 @@ footer { margin-top:100px; padding:32px 0; border-top:1px solid rgba(255,255,255
   .ch-params{ grid-template-columns:1fr; }
   .ch-info{ text-align:center; }
   .ch-badges{ justify-content:center; }
+  .mode-bar{ grid-template-columns:1fr 1fr; gap:8px; }
 }
 @media(max-width:600px){
-  header{padding:22px 0 32px;}
-  .logo-title{font-size:24px;}
-  .logo-orb{width:56px;height:56px;}
+  header{padding:16px 0 24px; flex-wrap:wrap; gap:10px;}
+  .logo-title{font-size:21px;}
+  .logo-sub{font-size:7px;letter-spacing:3px;}
+  .logo-orb{width:50px;height:50px;border-radius:16px;}
+  .logo-orb-inner{border-radius:16px;}
   .stats-strip{grid-template-columns:repeat(2,1fr);}
-  .gcard{padding:22px 18px;}
+  .stat-num{font-size:26px;}
+  .gcard{padding:18px 14px;}
   .actbar{flex-direction:column;}
-  .abtn{justify-content:center;}
-  .tabbar{gap:2px;}
-  .tabbtn{font-size:9.5px;padding:8px 10px;}
+  .abtn{justify-content:center; font-size:10px; padding:9px 14px;}
+  .tabbar{gap:2px; overflow-x:auto; -webkit-overflow-scrolling:touch; flex-wrap:nowrap;}
+  .tabbtn{font-size:9px;padding:8px 9px; white-space:nowrap; flex-shrink:0;}
   .stats-dash{grid-template-columns:1fr;}
   body{cursor:default;}
   #cdot,#cring{display:none;}
   #boot{display:none;}
   .ch-params{grid-template-columns:1fr;}
-  .mode-bar{grid-template-columns:1fr;}
+  .mode-bar{grid-template-columns:1fr; gap:7px;}
+  .mode-btn{padding:11px 14px; display:flex; align-items:center; gap:10px; text-align:right;}
+  .mode-btn .mode-ico{font-size:20px; display:inline; margin:0;}
+  .mode-sub{display:none;}
   .preset-row{flex-wrap:wrap;}
   .fgrid{grid-template-columns:1fr;}
-  .hdr-right{gap:5px;}
-  .hbtn{width:38px;height:38px;}
-  .status-live{padding:7px 12px;font-size:9px;}
+  .hdr-right{gap:4px;}
+  .hbtn{width:36px;height:36px;font-size:14px;}
+  .status-live{padding:6px 10px;font-size:8.5px;letter-spacing:1px;}
+  .wrapper{padding:0 12px 120px;}
+  .channel-card{padding:16px 14px;}
+  .ch-btn{padding:12px 14px;}
+  .snita{font-size:10.5px;}
+  input[type=text]{font-size:14px !important;}
+  .logo-wrap{gap:12px;}
+  .ndiv{margin:0 0 28px;}
+  .stats-strip{margin-bottom:28px;}
+  .cfgcard{padding:13px 12px;}
+  .cfname{font-size:12.5px;}
+  .cfacts{gap:4px;}
+  .cfbtn{padding:5px 9px;font-size:10px;}
+  .cfstr{font-size:9px;}
+  .notif{font-size:10.5px; padding:11px 18px; max-width:calc(100vw - 24px);}
+  .abl{filter:blur(100px) !important;}
+}
+@media(max-width:380px){
+  .logo-title{font-size:18px;}
+  .hbtn{width:32px;height:32px;font-size:13px;}
+  .stat-num{font-size:22px;}
 }
 </style>
 </head>
@@ -775,6 +819,17 @@ footer { margin-top:100px; padding:32px 0; border-top:1px solid rgba(255,255,255
         <span class="mode-ico">🛡️</span> Shecan
         <div class="mode-sub">IP جداگانه + SNI</div>
       </button>
+      <button class="mode-btn" id="mode-novpn" onclick="setMode('novpn')" style="border-color:rgba(0,255,106,0.18);grid-column:1/-1;">
+        <span class="mode-ico">⚡</span> بدون شکن
+        <div class="mode-sub">بدون DNS پولی · پیش‌فرض قفل‌شده</div>
+      </button>
+    </div>
+
+    <div class="locked-notice" id="novpn-notice">
+      <span class="lock-ico">🔒</span>
+      <span style="flex:1;">حالت بدون شکن · IP و SNI قفل شده‌اند</span>
+      <span class="lock-ip-badge">IP: 104.198.14.52</span>
+      <span style="color:var(--textm);font-size:9px;">38 SNI</span>
     </div>
 
     <div class="fgrid">
@@ -1060,6 +1115,19 @@ function loadIPs(preset) {
   updateGenBtn();
 }
 
+/* ══ NOVPN PRESET DATA (LOCKED) ══ */
+const NOVPN_IP = '104.198.14.52';
+const NOVPN_SNI = [
+  '50.7.5.83','50.7.87.2','50.7.87.3','50.7.87.4','50.7.87.5','75.2.60.5',
+  '144.76.1.88','104.21.33.34','188.114.98.0','188.114.99.0',
+  '3.162.247.34','3.162.247.38','3.162.247.45','3.162.247.77',
+  '3.33.186.135','63.176.8.218','85.10.207.48','94.130.33.41','95.216.69.37',
+  '104.198.14.52','104.21.63.202','15.197.167.90','172.67.150.14','204.12.196.34',
+  '35.157.26.135','52.222.214.38','52.222.214.99','54.232.119.62',
+  '65.109.34.234','94.130.70.160','138.201.54.122','142.54.178.211',
+  '172.67.158.128','184.171.110.10','52.222.214.108','52.222.214.124','63.141.252.203',
+];
+
 /* ══ MODE STATE ══ */
 let currentMode = 'normal';
 
@@ -1067,7 +1135,27 @@ function setMode(m) {
   currentMode = m;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('mode-' + m).classList.add('active');
-  document.getElementById('ip-field').style.display = (m === 'shecan') ? 'block' : 'none';
+
+  const ipField = document.getElementById('ip-field');
+  const sniTA = document.getElementById('sniList');
+  const novpnNotice = document.getElementById('novpn-notice');
+
+  if (m === 'shecan') {
+    ipField.style.display = 'block';
+    sniTA.removeAttribute('readonly');
+    novpnNotice.classList.remove('show');
+  } else if (m === 'novpn') {
+    ipField.style.display = 'none';
+    // Lock SNI to preset
+    sniTA.value = NOVPN_SNI.join('\n');
+    sniTA.setAttribute('readonly', 'readonly');
+    novpnNotice.classList.add('show');
+  } else {
+    ipField.style.display = 'none';
+    sniTA.removeAttribute('readonly');
+    novpnNotice.classList.remove('show');
+  }
+
   updateGenBtn();
   snd('click');
 }
@@ -1079,6 +1167,8 @@ function updateGenBtn() {
   if (currentMode === 'shecan') {
     const ips = (document.getElementById('ipList').value.trim().split('\n').filter(x => x.trim()).length) || 0;
     gt.textContent = `ساخت · GENERATE ${(snis * ips + snis) * T} CONFIGS`;
+  } else if (currentMode === 'novpn') {
+    gt.textContent = `ساخت · GENERATE ${NOVPN_SNI.length} CONFIGS ⚡`;
   } else {
     gt.textContent = `ساخت · GENERATE ${snis * T} CONFIGS`;
   }
@@ -1101,6 +1191,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ══ CURSOR ══ */
 (function() {
+  if ('ontouchstart' in window || window.innerWidth <= 768) return;
   const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
   let mx = 0, my = 0, rx = 0, ry = 0;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
@@ -1112,6 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ══ 3D TILT ══ */
 (function() {
+  if (window.innerWidth <= 768 || ('ontouchstart' in window)) return;
   const card = document.getElementById('formCard');
   if (!card) return;
   card.addEventListener('mousemove', e => {
@@ -1146,7 +1238,10 @@ document.querySelectorAll('[data-target]').forEach(el => cobs.observe(el));
 
 /* ══ HEX CANVAS ══ */
 (function() {
-  const canvas = document.getElementById('hex-canvas'); const ctx = canvas.getContext('2d');
+  const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+  const canvas = document.getElementById('hex-canvas');
+  if (isMobile) { canvas.style.display = 'none'; return; }
+  const ctx = canvas.getContext('2d');
   let W, H, hexes = []; let mx = 0, my = 0;
   document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
   function resize() {
@@ -1179,7 +1274,10 @@ document.querySelectorAll('[data-target]').forEach(el => cobs.observe(el));
 
 /* ══ PLASMA CANVAS ══ */
 (function() {
-  const canvas = document.getElementById('plasma-canvas'); const ctx = canvas.getContext('2d');
+  const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window);
+  const canvas = document.getElementById('plasma-canvas');
+  if (isMobile) { canvas.style.display = 'none'; return; }
+  const ctx = canvas.getContext('2d');
   let W, H;
   window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
   W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight;
@@ -1578,7 +1676,9 @@ document.getElementById('generateBtn').addEventListener('click', async function(
   const paddingKey = document.getElementById('cfgPaddingKey').value.trim();
   const paddingHeader = document.getElementById('cfgPaddingHeader').value.trim();
 
-  const rawSNIs = document.getElementById('sniList').value.trim().split('\n').map(d => d.trim().replace(/^https?:\/\//, '')).filter(Boolean);
+  const rawSNIs = currentMode === 'novpn'
+    ? NOVPN_SNI.slice()
+    : document.getElementById('sniList').value.trim().split('\n').map(d => d.trim().replace(/^https?:\/\//, '')).filter(Boolean);
   const rawIPs = currentMode === 'shecan' ? document.getElementById('ipList').value.trim().split('\n').map(i => i.trim()).filter(Boolean) : [];
 
   function hlf(id, msg) {
@@ -1597,7 +1697,11 @@ document.getElementById('generateBtn').addEventListener('click', async function(
   const pw = document.getElementById('pbarWrap'); const pb = document.getElementById('pbar'); const gt = document.getElementById('gbtxt');
   pw.classList.add('on'); clearTerm();
 
-  const totalExpected = currentMode === 'shecan' ? (rawSNIs.length * rawIPs.length + rawSNIs.length) : rawSNIs.length;
+  const totalExpected = currentMode === 'shecan'
+    ? (rawSNIs.length * rawIPs.length + rawSNIs.length)
+    : currentMode === 'novpn'
+    ? rawSNIs.length
+    : rawSNIs.length;
   const steps = [
     {p: 12, msg: '🔧 بررسی پارامترها...', c: 'tinf'},
     {p: 30, msg: `🌐 پردازش ${rawSNIs.length} دامنه...`, c: 'tinf'},
@@ -1617,6 +1721,11 @@ document.getElementById('generateBtn').addEventListener('click', async function(
     }
     for (const sni of rawSNIs) {
       generatedConfigs.push(makeConfig(uid, name, path, host, sni, sni, idx, true, serverAddr, paddingKey, paddingHeader));
+      idx++;
+    }
+  } else if (currentMode === 'novpn') {
+    for (const sni of rawSNIs) {
+      generatedConfigs.push(makeConfig(uid, name, path, host, sni, NOVPN_IP, idx, false, serverAddr, paddingKey, paddingHeader));
       idx++;
     }
   } else {
