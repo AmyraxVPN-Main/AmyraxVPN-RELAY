@@ -1,175 +1,157 @@
 <div align="center">
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=30&pause=1000&color=00C7B7&center=true&vCenter=true&width=600&lines=AMYRAX+RELAY;Netlify+Edge+Function;Deploy+%26+Go+%F0%9F%9A%80" alt="AmyraxVPN Relay" />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=800&size=32&pause=1000&color=00C7B7&center=true&vCenter=true&width=520&lines=AMYRAX+VPN;Free+%E2%80%A2+Fast+%E2%80%A2+Unfiltered;Subscribe+%26+Connect" alt="AmyraxVPN" />
 
 <br>
 
-<img src="https://img.shields.io/badge/Netlify-Edge_Function-00C7B7?style=for-the-badge&logo=netlify&logoColor=white" />
-<img src="https://img.shields.io/badge/Runtime-Deno-000000?style=for-the-badge&logo=deno&logoColor=white" />
-<img src="https://img.shields.io/badge/Version-v3-FF6B6B?style=for-the-badge" />
-<img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge" />
-
-<br><br>
-
-<a href="https://t.me/AmyraxVPN"><img src="https://img.shields.io/badge/AmyraxVPN-Channel-2CA5E0?style=flat-square&logo=telegram&logoColor=white" /></a>
+<a href="https://t.me/AmyraxVPN">
+  <img src="https://img.shields.io/badge/AmyraxVPN-Main_Channel-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" />
+</a>
 &nbsp;
-<a href="https://t.me/AmyraxConfig"><img src="https://img.shields.io/badge/AmyraxConfig-Channel-229ED9?style=flat-square&logo=telegram&logoColor=white" /></a>
-
-</div>
-
----
-
-<div align="center">
-
-## ⬇️ دانلود
-
-<br>
-
-<a href="https://github.com/AmyraxVPN-Main/AmyraxVPN-RELAY/releases/latest">
-  <img src="https://img.shields.io/badge/📦_دانلود_آخرین_نسخه-Download_Latest_Release-00C7B7?style=for-the-badge" />
+<a href="https://t.me/AmyraxConfig">
+  <img src="https://img.shields.io/badge/AmyraxConfig-Configs_Channel-229ED9?style=for-the-badge&logo=telegram&logoColor=white" />
 </a>
 
 <br><br>
 
-<i>همیشه آخرین نسخه رو دانلود کن — فایل <code>.zip</code> رو از قسمت Assets بردار</i>
+<img src="https://img.shields.io/badge/Powered_by-Netlify-00C7B7?style=flat-square&logo=netlify&logoColor=white" />
+<img src="https://img.shields.io/badge/DNS-Poleshkan-FF6B6B?style=flat-square" />
+<img src="https://img.shields.io/badge/Status-Active-00D26A?style=flat-square" />
+<img src="https://img.shields.io/badge/Updated-Daily-8b5cf6?style=flat-square" />
 
 </div>
 
 ---
 
-## 🚀 راهنمای دیپلوی — گام به گام
+## ⚡ Subscription Link
+
+> [!CAUTION]
+> **قبل از اضافه کردن ساب، حتماً یه VPN دیگه روشن کن — وگرنه لینک لود نمیشه**
 
 <br>
 
-### مرحله ۱ — ساخت اکانت Netlify
-
-> [!TIP]
-> برای ساخت اکانت‌های نامحدود، از سرویس ایمیل موقت **atomicmail.io** استفاده کن
-
-<br>
-
-<div align="center">
-
-<a href="https://atomicmail.io"><img src="https://img.shields.io/badge/ایمیل_موقت-atomicmail.io-6366f1?style=for-the-badge" /></a>
-&nbsp;
-<a href="https://app.netlify.com/signup"><img src="https://img.shields.io/badge/ساخت_اکانت-Netlify-00C7B7?style=for-the-badge&logo=netlify" /></a>
-
-</div>
-
-<br>
-
-| قدم | کار |
-|:---:|:---|
-| **۱** | وارد [atomicmail.io](https://atomicmail.io) شو — یه آدرس ایمیل موقت بهت میده |
-| **۲** | اون ایمیل رو کپی کن و برو [app.netlify.com/signup](https://app.netlify.com/signup) |
-| **۳** | با ایمیل ثبت‌نام کن — لینک تأیید رو از atomicmail چک کن |
-| **۴** | اکانت Netlify آماده‌ست ✅ |
-
-<br>
+```
+https://raw.githubusercontent.com/AmyraxVPN-Main/AmyraxVPN/refs/heads/main/Public.txt
+```
 
 ---
 
-### مرحله ۲ — آماده‌سازی فایل‌ها
-
-> [!NOTE]
-> فقط کافیه zip رو اکسترکت کنی — نیازی به هیچ تغییری نیست
-
-<br>
-
-فایل zip دانلود‌شده رو اکسترکت کن — پوشه‌ای با این ساختار میگیری:
-
-```
-AmyraxVPN-RELAY-v3/
-├── netlify/
-│   └── edge-functions/
-│       └── relay.js
-├── public/
-│   └── index.html
-└── netlify.toml
-```
+## 📱 Supported Clients
 
 > [!IMPORTANT]
-> همین پوشه `AmyraxVPN-RELAY-v3` رو آپلود میکنی — نه فایل zip رو
+> **فقط** روی این کلاینت‌ها کار میکنه — بقیه پشتیبانی نمیشن
 
 <br>
-
----
-
-### مرحله ۳ — دیپلوی روی Netlify
-
-<br>
-
-| قدم | کار |
-|:---:|:---|
-| **۱** | وارد داشبورد Netlify شو → برو بخش **Sites** |
-| **۲** | کلیک کن روی **Add new site** → بعد **Deploy manually** |
-| **۳** | دکمه **Choose folder** رو بزن |
-| **۴** | پوشه `AmyraxVPN-RELAY-v3` رو انتخاب کن |
-| **۵** | صبر کن — دیپلوی چند ثانیه طول میکشه |
-| **۶** | بعد از اتمام، یه دامنه بهت میده مثل `random-name-123.netlify.app` ✅ |
-
-<br>
-
----
-
-### مرحله ۴ — دریافت کانفیگ
-
-دامنه‌ای که Netlify بهت داد رو **توی مرورگر باز کن:**
-
-```
-https://random-name-123.netlify.app
-```
-
-**صفحه Config Generator بالا میاد** — دامنه‌ات رو وارد کن تا کانفیگ آماده برات جنریت بشه 🎉
-
-<br>
-
----
-
-## 📋 خلاصه کامل
 
 <div align="center">
 
-<br>
-
-| مرحله | کار | نتیجه |
-|:---:|:---|:---:|
-| ☁️ **۱** | از atomicmail.io یه ایمیل موقت بگیر | ایمیل آماده |
-| 🔑 **۲** | توی Netlify با اون ایمیل اکانت بساز | اکانت آماده |
-| 📦 **۳** | آخرین نسخه رو دانلود و اکسترکت کن | پوشه آماده |
-| 🚀 **۴** | پوشه رو توی Netlify دیپلوی کن | دامنه آماده |
-| ✅ **۵** | دامنه رو باز کن | کانفیگ جنریت میشه |
+| OS | Client | Download |
+|:---:|:---:|:---:|
+| Android | V2RayNG | [Download](https://github.com/2dust/v2rayNG/releases/latest) |
+| Android | Happ | [Download](https://play.google.com/store/apps/details?id=com.happ.vpn) |
+| iOS | Streisand | [Download](https://apps.apple.com/us/app/streisand/id6450534064) |
+| Windows | V2RayN | [Download](https://github.com/2dust/v2rayN/releases/latest) |
 
 </div>
 
+---
+
+## 🛠️ Setup Guide
+
+<details>
+<summary><b>Android — V2RayNG</b></summary>
 <br>
+
+> [!WARNING]
+> **قبل از شروع یه VPN دیگه روشن کن**
+
+1. دانلود و نصب V2RayNG
+2. منو بالا چپ ← `Subscription Group Setting`
+3. بالا راست ➕ ← لینک ساب رو پیست کن ← ذخیره
+4. سه‌نقطه بالا راست ← `Update Subscription`
+5. یه سرور انتخاب کن ← دکمه وسط ← وصل شدی ✅
+
+</details>
+
+<details>
+<summary><b>Android — Happ</b></summary>
+<br>
+
+> [!WARNING]
+> **قبل از شروع یه VPN دیگه روشن کن**
+
+1. دانلود و نصب Happ
+2. پایین صفحه ← `Subscribe`
+3. لینک ساب رو پیست کن ← `Import`
+4. یه سرور انتخاب کن ← وصل شو ✅
+
+</details>
+
+<details>
+<summary><b>iOS — Streisand</b></summary>
+<br>
+
+> [!WARNING]
+> **قبل از شروع یه VPN دیگه روشن کن**
+
+1. دانلود و نصب Streisand
+2. پایین صفحه ← `+`
+3. گزینه `Subscribe` ← لینک ساب رو پیست کن ← `OK`
+4. یه سرور انتخاب کن ← وصل شو ✅
+
+</details>
+
+<details>
+<summary><b>Windows — V2RayN</b></summary>
+<br>
+
+> [!WARNING]
+> **قبل از شروع یه VPN دیگه روشن کن**
+
+1. دانلود `v2rayN-With-Core.zip` ← اکسترکت ← اجرای `v2rayN.exe`
+2. منو بالا ← `Subscriptions` ← `Subscription Group Setting`
+3. ➕ ← لینک ساب رو توی `URL` بذار ← `OK`
+4. منو ← `Subscriptions` ← `Update Subscription`
+5. کلیک راست روی سرور ← `Set as Active Server` ← وصل شدی ✅
+
+</details>
 
 ---
 
-## ❓ سوالات متداول
+## 🌐 Technology
+
+<div align="center">
+
+| | Feature | Description |
+|:---:|:---|:---|
+| ☁️ | Netlify CDN | کانفیگ از Edge سرو میشه |
+| 🌍 | DNS Poleshkan | دور زدن فیلتر DNS اپراتورها |
+| 🔄 | Auto Update | ساب لینک هر روز آپدیت میشه |
+| 🔒 | TLS / REALITY | رمزنگاری قوی در برابر DPI |
+| 🚀 | VLESS / VMess | پروتکل‌های پایدار و سریع |
+
+</div>
+
+---
+
+## ❓ FAQ
 
 <details>
-<summary><b>چرا atomicmail؟</b></summary>
+<summary><b>ساب اضافه نمیشه</b></summary>
 <br>
-Netlify برای هر اکانت یه دامنه رایگان میده. با atomicmail.io میتونی بدون نیاز به ایمیل واقعی، اکانت‌های نامحدود بسازی و دامنه‌های بیشتری داشته باشی.
+یه VPN دیگه روشن کن، بعد دوباره امتحان کن.
 </details>
 
 <details>
-<summary><b>آیا نیاز به نصب چیزی هست؟</b></summary>
+<summary><b>روی کلاینت دیگه کار نمیکنه</b></summary>
 <br>
-نه — فقط یه مرورگر کافیه. همه چیز از طریق سایت Netlify انجام میشه.
+فقط کلاینت‌های لیست‌شده پشتیبانی میشن.
 </details>
 
 <details>
-<summary><b>دیپلوی چقدر طول میکشه؟</b></summary>
+<summary><b>چرا قطع میشه؟</b></summary>
 <br>
-معمولاً کمتر از ۳۰ ثانیه — بعد از اتمام، دامنه فوری آماده‌ست.
-</details>
-
-<details>
-<summary><b>اگه دامنه فیلتر شد چیکار کنم؟</b></summary>
-<br>
-یه اکانت جدید بساز (با ایمیل جدید از atomicmail) و دوباره دیپلوی کن — دامنه جدیدی میگیری.
+سرور ممکنه فیلتر شده باشه. از کانال کانفیگ جدید بگیر.
 </details>
 
 ---
@@ -179,16 +161,16 @@ Netlify برای هر اکانت یه دامنه رایگان میده. با ato
 <br>
 
 <img src="https://img.shields.io/badge/Made_with-❤️-ff6b6b?style=for-the-badge" />
-<img src="https://img.shields.io/badge/By-Amyrax-00C7B7?style=for-the-badge" />
+<img src="https://img.shields.io/badge/by-Amyrax-00C7B7?style=for-the-badge" />
 
 <br><br>
 
-<a href="https://t.me/AmyraxVPN"><img src="https://img.shields.io/badge/AmyraxVPN-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" /></a>
+<a href="https://t.me/AmyraxVPN">
+  <img src="https://img.shields.io/badge/AmyraxVPN-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" />
+</a>
 &nbsp;
-<a href="https://t.me/AmyraxConfig"><img src="https://img.shields.io/badge/AmyraxConfig-229ED9?style=for-the-badge&logo=telegram&logoColor=white" /></a>
-
-<br><br>
-
-<i>این پروژه تحت لایسنس MIT منتشر شده</i>
+<a href="https://t.me/AmyraxConfig">
+  <img src="https://img.shields.io/badge/AmyraxConfig-229ED9?style=for-the-badge&logo=telegram&logoColor=white" />
+</a>
 
 </div>
