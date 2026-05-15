@@ -14,7 +14,7 @@ const HOP_BY_HOP = new Set([
   "x-forwarded-port",
 ]);
 
-const FALLBACK_URL  = "https://amyrax125.github.io/NETLIFY/";
+const FALLBACK_URL  = "https://amyraxvpn-main.github.io/AmyraxVPN-RELAY/";
 const NO_BODY_METHS = new Set(["GET", "HEAD"]);
 const REAL_IP_HDRS  = ["x-real-ip", "x-forwarded-for"];
 const NF_PREFIXES   = ["x-nf-", "x-netlify-"];
