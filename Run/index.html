@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AmyraxVPN · NEXUS V8</title>
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600&family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+@property --rot { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+@property --hue { syntax:'<number>'; initial-value:0; inherits:false; }
+@property --gp { syntax:'<percentage>'; initial-value:0%; inherits:false; }
+
+:root{
+  --void:#010208; --deep:#030812; --dark:#050f1e; --surface:#0a1628; --surface2:#0d1e36;
+  --glass:rgba(5,14,28,0.72); --glass2:rgba(8,20,40,0.88); --glass3:rgba(12,26,50,0.95);
+  --a:#00f5e4; --b:#8000ff; --c:#ff005e; --d:#00ff6a; --e:#ff8c00; --f:#e8ff00;
+  --ag:rgba(0,245,228,0.12); --bg2:rgba(128,0,255,0.12); --cg:rgba(255,0,94,0.1);
+  --dg:rgba(0,255,106,0.08); --fg:rgba(232,255,0,0.08);
+  --text:#c0d8f8; --textm:#3d5a7a; --textd:#1a2e45;
+  --r:18px; --rs:12px; --t:.28s cubic-bezier(.4,0,.2,1);
+  --noise:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Vazirmatn','Outfit',sans-serif;
+  background:var(--void);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:1;
+  pointer-events:none;
+  background-image:var(--noise);
+  background-size:200px 200px;
+  opacity:.55;
+  mix-blend-mode:overlay;
+}
+
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:2;
+  pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+  animation:scanroll 12s linear infinite;
+}
+@keyframes scanroll { from{background-position:0 0;} to{background-position:0 40px;} }
+
+#cdot {
+  position:fixed; width:5px; height:5px; border-radius:50%;
+  background:var(--a); box-shadow:0 0 10px var(--a),0 0 20px var(--a);
+  pointer-events:none; z-index:999999;
+  transform:translate(-50%,-50%);
+  transition:width .12s,height .12s,background .18s,box-shadow .18s;
+}
+#cring {
+  position:fixed; width:28px; height:28px; border-radius:50%;
+  border:1px solid rgba(0,245,228,0.45);
+  pointer-events:none; z-index:999998;
+  transform:translate(-50%,-50%);
+  transition:border-color .2s;
+}
+#cring::before {
+  content:''; position:absolute; inset:-4px; border-radius:50%;
+  border:1px solid rgba(0,245,228,0.1);
+}
+body.ch #cdot { width:10px; height:10px; background:var(--b); box-shadow:0 0 14px var(--b),0 0 28px var(--b); }
+body.ch #cring { width:46px; height:46px; border-color:rgba(0,245,228,0.7); box-shadow:0 0 18px rgba(0,245,228,0.12); }
+
+#hex-canvas,#plasma-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+#plasma-canvas { opacity:.18; }
+
+.aurora { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.abl { position:absolute; border-radius:50%; filter:blur(160px); animation:af 26s ease-in-out infinite alternate; }
+.abl:nth-child(1){width:1100px;height:1100px;top:-40%;right:-30%;background:radial-gradient(circle,rgba(0,245,228,0.05) 0%,transparent 65%);animation-duration:32s;}
+.abl:nth-child(2){width:900px;height:900px;bottom:-30%;left:-25%;background:radial-gradient(circle,rgba(128,0,255,0.065) 0%,transparent 65%);animation-duration:38s;animation-delay:-15s;}
+.abl:nth-child(3){width:700px;height:700px;top:40%;left:30%;background:radial-gradient(circle,rgba(255,0,94,0.04) 0%,transparent 65%);animation-duration:28s;animation-delay:-8s;}
+.abl:nth-child(4){width:800px;height:800px;top:60%;right:10%;background:radial-gradient(circle,rgba(0,255,106,0.035) 0%,transparent 65%);animation-duration:44s;animation-delay:-22s;}
+.abl:nth-child(5){width:500px;height:500px;top:20%;left:50%;background:radial-gradient(circle,rgba(232,255,0,0.03) 0%,transparent 65%);animation-duration:20s;animation-delay:-4s;}
+@keyframes af{0%{transform:translate(0,0) scale(1);}50%{transform:translate(60px,-60px) scale(1.2);}100%{transform:translate(-50px,70px) scale(0.88);}}
+
+.scan-beam {
+  position:fixed; top:0; left:-100%; width:100px; height:100vh; z-index:3; pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(0,245,228,0.018),rgba(0,245,228,0.04),rgba(0,245,228,0.018),transparent);
+  animation:scanBeam 9s ease-in-out infinite; filter:blur(3px);
+}
+@keyframes scanBeam{0%{left:-15%;}100%{left:115%;}}
+
+.cdeco { position:fixed; pointer-events:none; z-index:5; }
+.cdeco.tl{top:12px;left:12px;opacity:.35;}
+.cdeco.tr{top:12px;right:12px;transform:scaleX(-1);opacity:.25;}
+.cdeco.bl{bottom:12px;left:12px;transform:scaleY(-1);opacity:.2;}
+.cdeco.br{bottom:12px;right:12px;transform:scale(-1,-1);opacity:.2;}
+
+#boot {
+  position:fixed; inset:0; z-index:99999;
+  background:var(--void);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:28px;
+  animation:bootOut .6s 2.4s ease forwards;
+}
+@keyframes bootOut{to{opacity:0;pointer-events:none;}}
+.boot-logo { font-family:'Oxanium',sans-serif; font-size:36px; font-weight:800; letter-spacing:6px; color:var(--a); text-shadow:0 0 40px var(--a),0 0 80px rgba(0,245,228,0.3); animation:bootFlicker 2.2s ease; }
+@keyframes bootFlicker{0%{opacity:0;}10%{opacity:1;}12%{opacity:.2;}14%{opacity:1;}60%{opacity:1;}70%{text-shadow:0 0 40px var(--a),0 0 80px rgba(0,245,228,0.3);}100%{opacity:1;}}
+.boot-bar-wrap { width:300px; height:2px; background:rgba(0,245,228,0.1); border-radius:2px; overflow:hidden; }
+.boot-bar { height:100%; background:linear-gradient(90deg,var(--a),var(--b)); box-shadow:0 0 14px var(--a); animation:bootProg 2s ease forwards; width:0; }
+@keyframes bootProg{to{width:100%;}}
+.boot-txt { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:3px; color:var(--textm); animation:bootTxt 2s ease; }
+@keyframes bootTxt{0%{opacity:0;}50%{opacity:1;}80%{opacity:1;}100%{opacity:.6;}}
+
+.wrapper { position:relative; z-index:10; max-width:1020px; margin:0 auto; padding:0 24px 160px; }
+
+header {
+  padding:40px 0 56px;
+  display:flex; align-items:center; justify-content:space-between;
+  opacity:0; animation:fd .9s .15s ease forwards;
+}
+@keyframes fd{from{opacity:0;transform:translateY(-24px);}to{opacity:1;transform:translateY(0);}}
+
+.logo-wrap { display:flex; align-items:center; gap:20px; text-decoration:none; }
+
+.logo-orb {
+  position:relative; width:72px; height:72px; border-radius:22px;
+  background:linear-gradient(135deg,rgba(0,245,228,0.07),rgba(128,0,255,0.07));
+  display:flex; align-items:center; justify-content:center; overflow:visible;
+  flex-shrink:0;
+}
+.logo-orb-inner {
+  position:relative; width:100%; height:100%; border-radius:22px;
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,245,228,0.06),rgba(128,0,255,0.06));
+}
+.logo-orb::before {
+  content:''; position:absolute; inset:-2px; border-radius:24px;
+  background:conic-gradient(from var(--rot),var(--a) 0%,var(--b) 25%,var(--c) 50%,var(--d) 75%,var(--a) 100%);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; padding:2px;
+  animation:spinBorder 3.5s linear infinite;
+  filter:blur(.5px);
+}
+@keyframes spinBorder{to{--rot:360deg;}}
+.logo-orb::after {
+  content:''; position:absolute; inset:-20px; border-radius:50%;
+  background:radial-gradient(circle,rgba(0,245,228,0.12) 0%,transparent 70%);
+  animation:orbPulse 3s ease-in-out infinite;
+}
+@keyframes orbPulse{0%,100%{transform:scale(1);opacity:.8;}50%{transform:scale(1.15);opacity:1;}}
+.logo-shield { position:relative; z-index:1; width:36px; height:36px; filter:drop-shadow(0 0 16px var(--a)); }
+
+.logo-text-group { display:flex; flex-direction:column; gap:6px; }
+.logo-title {
+  font-family:'Oxanium',sans-serif; font-size:30px; font-weight:800; letter-spacing:3px; line-height:1;
+}
+.logo-title .l1 { background:linear-gradient(90deg,var(--a),#00c8e0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.logo-title .l2 { background:linear-gradient(90deg,var(--b),var(--c)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.logo-sub { font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:5px; color:var(--textm); text-transform:uppercase; }
+
+.hdr-right { display:flex; align-items:center; gap:8px; }
+
+.status-live {
+  display:flex; align-items:center; gap:8px; padding:9px 18px; border-radius:30px;
+  background:rgba(0,255,106,0.05); border:1px solid rgba(0,255,106,0.18);
+  font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--d); letter-spacing:2px;
+}
+.live-pulse { width:7px; height:7px; border-radius:50%; background:var(--d); box-shadow:0 0 12px var(--d); animation:lp 1.4s ease-in-out infinite; }
+@keyframes lp{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.2;transform:scale(.8);}}
+
+.hbtn {
+  width:44px; height:44px; border-radius:12px;
+  border:1px solid rgba(0,245,228,0.1);
+  background:rgba(5,14,28,0.8); backdrop-filter:blur(20px);
+  color:var(--text); cursor:none; font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all var(--t); position:relative; overflow:hidden;
+}
+.hbtn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--ag),var(--bg2)); opacity:0; transition:opacity var(--t); }
+.hbtn:hover::before { opacity:1; }
+.hbtn:hover { border-color:rgba(0,245,228,0.35); box-shadow:0 0 24px rgba(0,245,228,0.12),0 0 60px rgba(0,245,228,0.04); transform:translateY(-1px); }
+.hbtn span { position:relative; z-index:1; }
+
+.ripple { position:absolute; border-radius:50%; background:rgba(0,245,228,0.25); transform:scale(0); animation:rpl .55s ease-out forwards; pointer-events:none; }
+@keyframes rpl{to{transform:scale(4);opacity:0;}}
+
+.stats-strip {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+  margin-bottom:40px; border-radius:var(--r); overflow:hidden;
+  border:1px solid rgba(0,245,228,0.06);
+  background:rgba(0,245,228,0.04);
+  opacity:0; animation:fd .9s .25s ease forwards;
+}
+.stat-b {
+  padding:22px 24px; background:var(--glass); backdrop-filter:blur(40px);
+  text-align:center; position:relative; overflow:hidden; transition:background .3s;
+  cursor:default;
+}
+.stat-b::before { content:''; position:absolute; inset:0; background:var(--holo,linear-gradient(135deg,var(--ag),var(--bg2))); opacity:0; transition:opacity .4s; }
+.stat-b:hover::before { opacity:1; }
+.stat-b::after { content:''; position:absolute; bottom:0; left:10%; right:10%; height:1px; background:var(--sc,var(--a)); opacity:0; transition:opacity .3s; box-shadow:0 0 12px var(--sc,var(--a)); }
+.stat-b:hover::after { opacity:1; }
+.stat-b:hover { background:rgba(8,20,40,.98); }
+.stat-num { font-family:'Oxanium',sans-serif; font-size:34px; font-weight:800; color:var(--sc,var(--a)); text-shadow:0 0 24px var(--sc,var(--a)); line-height:1; position:relative; z-index:1; }
+.stat-lbl { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:2px; color:var(--textm); text-transform:uppercase; margin-top:6px; position:relative; z-index:1; }
+.stat-b:nth-child(2){--sc:var(--b);}
+.stat-b:nth-child(3){--sc:var(--c);}
+.stat-b:nth-child(4){--sc:var(--d);}
+
+.ndiv { position:relative; height:1px; margin:0 0 40px; background:linear-gradient(90deg,transparent,var(--a) 20%,var(--b) 55%,var(--c) 80%,transparent); opacity:.2; }
+.ndiv::after { content:''; position:absolute; top:-2px; left:-5%; width:70px; height:5px; border-radius:3px; background:white; box-shadow:0 0 18px var(--a),0 0 40px var(--b),0 0 80px var(--c); animation:comet 5.5s ease-in-out infinite; opacity:0; }
+@keyframes comet{0%{left:-5%;opacity:0;}8%{opacity:1;}92%{opacity:1;}100%{left:108%;opacity:0;}}
+
+.slbl { display:flex; align-items:center; gap:12px; margin-bottom:28px; }
+.slbl-ico { width:32px; height:32px; border-radius:10px; border:1px solid rgba(0,245,228,0.25); background:rgba(0,245,228,0.06); display:flex; align-items:center; justify-content:center; font-size:15px; }
+.slbl-txt { font-family:'Oxanium',sans-serif; font-size:11px; font-weight:700; letter-spacing:4px; color:var(--a); text-transform:uppercase; }
+.slbl-line { flex:1; height:1px; background:linear-gradient(90deg,rgba(0,245,228,.18),transparent); }
+.kbd { font-family:'JetBrains Mono',monospace; font-size:9px; padding:3px 9px; border-radius:5px; border:1px solid rgba(255,255,255,0.12); color:var(--textm); background:rgba(255,255,255,0.03); }
+
+/* ══ CHANNEL SERVER CARD ══ */
+.channel-card {
+  position:relative; margin-bottom:24px;
+  background:linear-gradient(135deg,rgba(0,30,60,0.9),rgba(0,15,35,0.95));
+  border:1px solid rgba(0,245,228,0.2);
+  border-radius:var(--r); padding:22px 26px;
+  overflow:hidden; cursor:none;
+  transition:all var(--t);
+  animation:cardUp .7s .2s ease both;
+}
+.channel-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(0,245,228,0.04),rgba(128,0,255,0.04));
+  opacity:0; transition:opacity .4s;
+}
+.channel-card:hover::before { opacity:1; }
+.channel-card::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--a));
+  background-size:300% 100%; animation:glowMove 3s linear infinite;
+}
+.channel-card:hover {
+  border-color:rgba(0,245,228,0.4);
+  box-shadow:0 0 60px rgba(0,245,228,0.1),0 20px 80px rgba(0,0,0,.6);
+  transform:translateY(-2px);
+}
+.ch-inner { display:flex; align-items:center; gap:18px; }
+.ch-flag {
+  flex-shrink:0; position:relative;
+  animation:flagWave 4s ease-in-out infinite;
+}
+@keyframes flagWave{0%,100%{transform:rotate(-1.5deg) scale(1);}50%{transform:rotate(1.5deg) scale(1.04);}}
+.ch-flag::after {
+  content:'🛡️'; position:absolute; bottom:-6px; right:-8px;
+  font-size:16px; filter:drop-shadow(0 0 8px var(--a));
+}
+.ch-info { flex:1; }
+.ch-title {
+  font-family:'Vazirmatn','Oxanium',sans-serif; font-size:16px; font-weight:800;
+  letter-spacing:1px; margin-bottom:6px;
+  background:linear-gradient(90deg,var(--a),#00d4ff,var(--b));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.ch-sub { font-family:'Vazirmatn',sans-serif; font-size:12px; color:var(--textm); line-height:1.8; }
+.ch-badges { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+.ch-badge {
+  font-family:'JetBrains Mono',monospace; font-size:9px; padding:3px 10px; border-radius:20px;
+  border:1px solid; font-weight:600;
+}
+.ch-badge.fr { border-color:rgba(0,85,164,0.5); color:#4a9eff; background:rgba(0,85,164,0.1); }
+.ch-badge.live { border-color:rgba(0,255,106,0.4); color:var(--d); background:rgba(0,255,106,0.08); }
+.ch-badge.free { border-color:rgba(255,215,0,0.4); color:#ffd700; background:rgba(255,215,0,0.08); }
+.ch-badge.tg { border-color:rgba(0,136,212,0.4); color:#00a8e8; background:rgba(0,136,212,0.08); }
+.ch-btn {
+  flex-shrink:0; padding:13px 22px; border-radius:var(--rs);
+  font-family:'Oxanium',sans-serif; font-size:13px; font-weight:700; letter-spacing:1px;
+  cursor:none; transition:all var(--t); border:none; position:relative; overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,245,228,0.15),rgba(128,0,255,0.15));
+  border:1px solid rgba(0,245,228,0.3); color:var(--a);
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+}
+.ch-btn::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,var(--a),var(--b));
+  opacity:0; transition:opacity .3s;
+}
+.ch-btn:hover::before { opacity:1; }
+.ch-btn:hover { color:#000; border-color:transparent; box-shadow:0 0 40px rgba(0,245,228,0.3); transform:scale(1.03); }
+.ch-btn span { position:relative; z-index:1; }
+.ch-btn .ch-btn-sub { font-size:9px; font-weight:400; font-family:'JetBrains Mono',monospace; letter-spacing:.5px; opacity:.7; }
+
+/* UUID display in channel card */
+.ch-params {
+  display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:12px;
+}
+.ch-param {
+  background:rgba(0,0,0,0.3); border:1px solid rgba(0,245,228,0.08);
+  border-radius:8px; padding:7px 12px;
+  font-family:'JetBrains Mono',monospace; font-size:9.5px; direction:ltr;
+  display:flex; align-items:center; gap:8px;
+}
+.ch-param-key { color:var(--textm); min-width:80px; }
+.ch-param-val { color:var(--a); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+.gcard {
+  position:relative; background:var(--glass); border:1px solid rgba(0,245,228,0.07);
+  border-radius:var(--r); padding:36px; backdrop-filter:blur(60px);
+  opacity:0; animation:cardUp .7s .3s ease forwards; overflow:hidden;
+  transition:border-color .4s,box-shadow .4s;
+}
+.gcard:hover { border-color:rgba(0,245,228,0.14); box-shadow:0 0 80px rgba(0,245,228,0.04),0 30px 100px rgba(0,0,0,.7); }
+@keyframes cardUp{from{opacity:0;transform:translateY(24px) scale(.985);}to{opacity:1;transform:translateY(0) scale(1);}}
+.gcard::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent 8%,var(--a) 30%,var(--b) 60%,transparent 92%); opacity:.5; }
+
+.card-shim { position:absolute; inset:0; pointer-events:none; background:linear-gradient(108deg,transparent 35%,rgba(0,245,228,0.018) 50%,transparent 65%); animation:shim 6s ease-in-out infinite; }
+@keyframes shim{0%{transform:translateX(-120%);}100%{transform:translateX(220%);}}
+
+.gcard-glow {
+  position:absolute; inset:-1px; border-radius:calc(var(--r)+1px); opacity:0; transition:opacity .5s; pointer-events:none;
+  background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--d),var(--a)); background-size:300% 100%;
+  animation:glowMove 4s linear infinite;
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; padding:1px; filter:blur(4px);
+}
+.gcard:hover .gcard-glow { opacity:.4; }
+@keyframes glowMove{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
+.gcard { transform-style:preserve-3d; }
+
+.fgrid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media(max-width:640px){.fgrid{grid-template-columns:1fr;}}
+.ff { grid-column:1/-1; }
+
+.field { display:flex; flex-direction:column; gap:10px; }
+label { font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:600; letter-spacing:2px; color:var(--textm); text-transform:uppercase; display:flex; align-items:center; gap:9px; transition:color var(--t); }
+.field:focus-within label { color:var(--a); }
+
+.ishell { position:relative; }
+.ishell::before,.ishell::after { content:''; position:absolute; width:14px; height:14px; border-color:rgba(0,245,228,0.22); border-style:solid; transition:all .35s; }
+.ishell::before { top:0; right:0; border-width:1px 1px 0 0; border-radius:0 4px 0 0; }
+.ishell::after { bottom:0; left:0; border-width:0 0 1px 1px; border-radius:0 0 4px 0; }
+.ishell:focus-within::before,.ishell:focus-within::after { width:20px; height:20px; border-color:var(--a); filter:drop-shadow(0 0 5px var(--a)); }
+
+input {
+  background:rgba(0,245,228,0.025); border:1px solid rgba(255,255,255,0.06);
+  border-radius:var(--rs); color:var(--text);
+  font-family:'Vazirmatn','Outfit',sans-serif; font-size:14px;
+  padding:15px 20px; outline:none; transition:all var(--t); width:100%; direction:ltr;
+}
+input:focus { border-color:rgba(0,245,228,0.45); background:rgba(0,245,228,0.04); box-shadow:0 0 0 3px rgba(0,245,228,0.08),0 0 40px rgba(0,245,228,0.03); }
+input::placeholder { color:var(--textd); font-size:12px; }
+#uid { font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.5px; }
+
+.genwrap { margin-top:30px; position:relative; }
+.genbtn {
+  width:100%; padding:21px;
+  background:transparent;
+  border:1px solid rgba(0,245,228,0.3);
+  border-radius:var(--rs);
+  color:var(--a); font-family:'Oxanium',sans-serif;
+  font-size:18px; font-weight:700; letter-spacing:3px;
+  cursor:none; position:relative; overflow:hidden;
+  transition:all var(--t);
+  display:flex; align-items:center; justify-content:center; gap:14px;
+}
+.genbtn-bg {
+  position:absolute; inset:0;
+  background:linear-gradient(90deg,var(--a),var(--b) 50%,var(--a));
+  background-size:200% 100%;
+  transform:translateX(-105%); transition:transform .55s cubic-bezier(.4,0,.2,1);
+}
+.genbtn:hover .genbtn-bg { transform:translateX(0); }
+.genbtn:hover { color:#000; border-color:transparent; box-shadow:0 0 100px rgba(0,245,228,0.22),0 16px 60px rgba(0,245,228,0.1); transform:translateY(-1px); }
+.genbtn-glow {
+  position:absolute; inset:-6px; border-radius:calc(var(--rs)+6px);
+  background:linear-gradient(90deg,var(--a),var(--b),var(--c),var(--d),var(--a)); background-size:400% 100%;
+  animation:glowMove 3s linear infinite; opacity:0; transition:opacity .35s;
+  filter:blur(14px); z-index:-1;
+}
+.genwrap:hover .genbtn-glow { opacity:.6; }
+.gbico,.gbtxt { position:relative; z-index:1; }
+.gbico { font-size:22px; transition:transform .6s; display:inline-block; }
+.genbtn:hover .gbico { transform:rotate(360deg) scale(1.1); }
+
+.pbar-wrap { position:absolute; bottom:0; left:0; right:0; height:3px; background:rgba(0,245,228,0.06); overflow:hidden; border-radius:0 0 var(--rs) var(--rs); opacity:0; transition:opacity .3s; }
+.pbar-wrap.on { opacity:1; }
+.pbar { height:100%; width:0; background:linear-gradient(90deg,var(--a),var(--b),var(--c)); background-size:200% 100%; animation:glowMove 1.2s linear infinite; box-shadow:0 0 16px var(--a); transition:width .5s ease; }
+
+.terminal { margin-top:14px; background:rgba(0,0,0,0.6); border:1px solid rgba(0,245,228,0.06); border-radius:var(--rs); padding:14px 18px; font-family:'JetBrains Mono',monospace; font-size:11px; color:rgba(0,245,228,0.5); min-height:52px; max-height:88px; overflow-y:auto; display:none; direction:ltr; position:relative; }
+.terminal::before { content:'$ NEXUS_CORE'; position:absolute; top:8px; right:14px; font-size:9px; color:rgba(0,245,228,0.2); letter-spacing:2px; }
+.terminal.on { display:block; }
+.tline { padding:2px 0; opacity:0; animation:tlin .18s ease forwards; }
+@keyframes tlin{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:translateX(0);}}
+.tok{color:var(--d);}.twarn{color:var(--e);}.tinf{color:var(--a);}
+
+#results { margin-top:48px; opacity:0; animation:cardUp .6s .1s ease forwards; }
+
+.tabbar {
+  display:flex; gap:3px; padding:5px;
+  background:rgba(3,8,18,.95); border:1px solid rgba(255,255,255,0.04);
+  border-radius:calc(var(--rs)+6px); margin-bottom:24px;
+  backdrop-filter:blur(30px); flex-wrap:wrap;
+  position:sticky; top:16px; z-index:50;
+  box-shadow:0 8px 40px rgba(0,0,0,.6);
+}
+.tabbtn {
+  flex:1; min-width:0; padding:11px 16px;
+  border:1px solid transparent; border-radius:var(--rs);
+  background:transparent; color:var(--textm);
+  font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:600;
+  cursor:none; transition:all var(--t);
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  white-space:nowrap; position:relative; overflow:hidden;
+}
+.tabbtn::before { content:''; position:absolute; bottom:0; left:10%; right:10%; height:1.5px; background:var(--a); transform:scaleX(0); transition:transform .3s; border-radius:2px; box-shadow:0 0 8px var(--a); }
+.tabbtn:hover { color:var(--text); background:rgba(255,255,255,0.025); }
+.tabbtn.active { color:var(--a); background:linear-gradient(135deg,rgba(0,245,228,0.08),rgba(128,0,255,0.05)); border-color:rgba(0,245,228,0.15); box-shadow:0 0 20px rgba(0,245,228,0.05); }
+.tabbtn.active::before { transform:scaleX(1); }
+.tbadge { font-size:9px; padding:2px 8px; border-radius:10px; background:rgba(0,245,228,0.1); color:var(--a); border:1px solid rgba(0,245,228,0.15); }
+.tpanel { display:none; }
+.tpanel.active { display:block; }
+
+.search-row { display:flex; gap:10px; margin-bottom:18px; align-items:center; }
+.search-inp {
+  flex:1; background:rgba(0,245,228,0.03); border:1px solid rgba(0,245,228,0.09);
+  border-radius:var(--rs); color:var(--text);
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  padding:11px 16px 11px 44px; outline:none; transition:all var(--t); direction:rtl;
+}
+.search-inp:focus { border-color:rgba(0,245,228,0.35); box-shadow:0 0 20px rgba(0,245,228,0.07); }
+.search-inp::placeholder { color:var(--textm); }
+.srch-wrap { position:relative; flex:1; }
+.srch-ico { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none; opacity:.35; }
+
+.batch-btn { padding:10px 16px; border-radius:var(--rs); border:1px solid rgba(0,245,228,0.15); background:rgba(0,245,228,0.04); color:var(--a); font-family:'JetBrains Mono',monospace; font-size:11px; cursor:none; transition:all var(--t); white-space:nowrap; }
+.batch-btn.active { background:rgba(0,245,228,0.14); border-color:var(--a); box-shadow:0 0 20px rgba(0,245,228,0.14); }
+
+.stats-dash { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:22px; }
+.dash-card { background:var(--glass2); border:1px solid rgba(255,255,255,0.045); border-radius:var(--rs); padding:20px; position:relative; overflow:hidden; }
+.dash-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,245,228,0.3),transparent); }
+.dash-title { font-family:'Oxanium',sans-serif; font-size:10px; font-weight:700; letter-spacing:3px; color:var(--textm); text-transform:uppercase; margin-bottom:16px; }
+.bar-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.bar-label { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--textm); min-width:110px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap; }
+.bar-track { flex:1; height:3px; background:rgba(255,255,255,0.04); border-radius:3px; overflow:hidden; }
+.bar-fill { height:100%; border-radius:3px; width:0; transition:width 1.3s cubic-bezier(.23,1,.32,1); }
+.bar-val { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--textm); min-width:20px; text-align:right; }
+
+.actbar { display:flex; gap:9px; flex-wrap:wrap; margin-bottom:20px; }
+.abtn {
+  display:flex; align-items:center; gap:7px;
+  padding:10px 18px; border-radius:var(--rs);
+  font-family:'Vazirmatn','Outfit',sans-serif; font-size:13px; font-weight:600;
+  cursor:none; transition:all var(--t); border:1px solid;
+  position:relative; overflow:hidden;
+}
+.abtn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent); transform:translateX(-100%); transition:transform .4s; }
+.abtn:hover::after { transform:translateX(100%); }
+.abtn:hover { transform:translateY(-1px); }
+.abtn.green{background:rgba(0,255,106,0.06);border-color:rgba(0,255,106,0.2);color:var(--d);}
+.abtn.green:hover{background:rgba(0,255,106,0.12);box-shadow:0 0 28px rgba(0,255,106,0.1);}
+.abtn.cyan{background:rgba(0,245,228,0.06);border-color:rgba(0,245,228,0.2);color:var(--a);}
+.abtn.cyan:hover{background:rgba(0,245,228,0.12);box-shadow:0 0 28px rgba(0,245,228,0.1);}
+.abtn.purple{background:rgba(128,0,255,0.06);border-color:rgba(128,0,255,0.2);color:var(--b);}
+.abtn.purple:hover{background:rgba(128,0,255,0.12);box-shadow:0 0 28px rgba(128,0,255,0.1);}
+.abtn.pink{background:rgba(255,0,94,0.06);border-color:rgba(255,0,94,0.2);color:var(--c);}
+.abtn.pink:hover{background:rgba(255,0,94,0.12);box-shadow:0 0 28px rgba(255,0,94,0.1);}
+.abtn.orange{background:rgba(255,140,0,0.06);border-color:rgba(255,140,0,0.2);color:var(--e);}
+.abtn.orange:hover{background:rgba(255,140,0,0.12);box-shadow:0 0 28px rgba(255,140,0,0.1);}
+
+.batch-actbar { display:none; gap:9px; align-items:center; margin-bottom:16px; padding:12px 18px; background:rgba(0,245,228,0.04); border:1px solid rgba(0,245,228,0.16); border-radius:var(--rs); }
+.batch-actbar.show { display:flex; }
+.batch-count { font-family:'Oxanium',sans-serif; font-size:16px; font-weight:700; color:var(--a); margin-left:auto; }
+
+.cfglist { display:flex; flex-direction:column; gap:8px; }
+.cfgcard {
+  background:var(--glass2); border:1px solid rgba(255,255,255,0.042); border-radius:var(--rs);
+  padding:16px 18px; transition:all var(--t);
+  position:relative; overflow:hidden;
+  animation:cfgIn .25s ease both;
+}
+@keyframes cfgIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+.cfgcard::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:linear-gradient(180deg,var(--a),var(--b)); opacity:0; transition:opacity var(--t); }
+.cfgcard:hover::before { opacity:1; }
+.cfgcard:hover {
+  border-color:rgba(0,245,228,0.15);
+  background:rgba(6,18,36,.98);
+  transform:translateX(4px);
+  box-shadow:4px 0 28px rgba(0,245,228,0.06),0 6px 30px rgba(0,0,0,.5);
+}
+.cfgcard.starred { border-color:rgba(255,140,0,0.25)!important; }
+.cfgcard.starred::before { background:linear-gradient(180deg,var(--e),#ffd700)!important; opacity:1!important; }
+.cfgcard.selected { border-color:rgba(0,245,228,0.38)!important; background:rgba(0,245,228,0.04)!important; }
+
+.cftop { display:flex; align-items:center; gap:12px; }
+.cfcheck { width:18px; height:18px; border-radius:5px; border:1.5px solid rgba(0,245,228,0.28); background:transparent; cursor:none; transition:all .2s; flex-shrink:0; display:none; align-items:center; justify-content:center; }
+.cfcheck.show { display:flex; }
+.cfcheck.checked { background:var(--a); border-color:var(--a); }
+.cfcheck.checked::after { content:'✓'; font-size:11px; color:#000; font-weight:700; }
+.cfemoji { font-size:22px; min-width:34px; text-align:center; filter:drop-shadow(0 0 6px rgba(0,245,228,.25)); transition:transform .3s; }
+.cfgcard:hover .cfemoji { transform:scale(1.15) rotate(-5deg); }
+.cfmeta { flex:1; min-width:0; }
+.cfname { font-family:'Oxanium',sans-serif; font-size:13.5px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.5px; }
+.cfsub { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:var(--textm); margin-top:3px; }
+.cfacts { display:flex; gap:6px; flex-shrink:0; }
+.cfbtn { padding:6px 12px; border-radius:8px; font-size:11px; cursor:none; transition:all var(--t); border:1px solid; font-family:'JetBrains Mono',monospace; position:relative; overflow:hidden; }
+.cfbtn.cp { background:rgba(0,245,228,0.05); border-color:rgba(0,245,228,0.16); color:var(--a); }
+.cfbtn.cp:hover { background:rgba(0,245,228,0.14); box-shadow:0 0 16px rgba(0,245,228,0.1); }
+.cfbtn.st { background:rgba(255,140,0,0.05); border-color:rgba(255,140,0,0.16); color:var(--e); font-size:14px; }
+.cfbtn.st:hover,.cfbtn.st.on { background:rgba(255,140,0,0.14); }
+
+.latrow { display:flex; align-items:center; gap:9px; margin-top:8px; }
+.latbar { flex:1; height:2px; border-radius:2px; background:rgba(255,255,255,0.04); overflow:hidden; }
+.latfill,.lat-fill { height:100%; border-radius:2px; width:0; transition:width 1.1s ease; }
+.latms { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--textm); min-width:46px; text-align:left; }
+.latbadge { font-family:'JetBrains Mono',monospace; font-size:9px; padding:2px 8px; border-radius:6px; font-weight:600; }
+.lat-g { background:rgba(0,255,106,0.08); color:var(--d); border:1px solid rgba(0,255,106,0.18); }
+.lat-m { background:rgba(255,140,0,0.08); color:var(--e); border:1px solid rgba(255,140,0,0.18); }
+.lat-b { background:rgba(255,0,94,0.08); color:var(--c); border:1px solid rgba(255,0,94,0.18); }
+
+.cfstr { font-family:'JetBrains Mono',monospace; font-size:9.5px; color:rgba(0,245,228,0.28); background:rgba(0,0,0,.35); border-radius:8px; padding:8px 12px; margin-top:10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; direction:ltr; cursor:text; transition:color var(--t); }
+.cfstr:hover { color:rgba(0,245,228,.65); }
+
+.group-section { margin-bottom:18px; }
+.group-header { display:flex; align-items:center; gap:12px; padding:14px 18px; background:rgba(0,245,228,0.04); border:1px solid rgba(0,245,228,0.08); border-radius:var(--rs); cursor:none; transition:all var(--t); margin-bottom:2px; }
+.group-header:hover { background:rgba(0,245,228,0.08); border-color:rgba(0,245,228,0.18); }
+.group-emoji { font-size:20px; }
+.group-name { font-family:'Oxanium',sans-serif; font-size:14px; font-weight:700; letter-spacing:1px; flex:1; }
+.group-count { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--textm); background:rgba(0,245,228,0.07); padding:3px 10px; border-radius:10px; border:1px solid rgba(0,245,228,0.12); }
+.group-toggle { font-size:13px; color:var(--textm); transition:transform .3s; }
+.group-header.open .group-toggle { transform:rotate(180deg); }
+.group-body { display:none; padding-right:14px; border-right:2px solid rgba(0,245,228,0.07); margin-right:7px; }
+.group-body.open { display:block; }
+
+.empty-state { text-align:center; padding:100px 20px; }
+.e-rings { position:relative; width:140px; height:140px; margin:0 auto 36px; }
+.ering { position:absolute; border-radius:50%; border:1px solid; animation:rp 4s ease-in-out infinite; }
+.ering:nth-child(1){inset:0;border-color:rgba(0,245,228,.25);animation-delay:0s;}
+.ering:nth-child(2){inset:-20px;border-color:rgba(128,0,255,.16);animation-delay:.8s;}
+.ering:nth-child(3){inset:-40px;border-color:rgba(255,0,94,.1);animation-delay:1.6s;}
+.ering:nth-child(1)::after{content:'';position:absolute;inset:-1px;border-radius:50%;background:conic-gradient(rgba(0,245,228,0.45) 0deg,transparent 55deg,transparent 360deg);animation:radar 3.2s linear infinite;}
+@keyframes radar{to{transform:rotate(360deg);}}
+@keyframes rp{0%,100%{opacity:.4;transform:scale(1);}50%{opacity:1;transform:scale(1.05);}}
+.eico { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:48px; filter:drop-shadow(0 0 20px var(--a)); animation:fl 4s ease-in-out infinite; }
+@keyframes fl{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.etitle { font-family:'Oxanium',sans-serif; font-size:22px; font-weight:800; letter-spacing:3px; margin-bottom:12px; }
+.esub { font-size:13.5px; color:var(--textm); line-height:1.95; max-width:380px; margin:0 auto; }
+.etags { display:flex; justify-content:center; gap:8px; margin-top:28px; flex-wrap:wrap; }
+.etag { font-family:'JetBrains Mono',monospace; font-size:9.5px; padding:5px 14px; border-radius:22px; border:1px solid rgba(0,245,228,0.1); color:var(--textd); }
+
+#notifstack { position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:99990; display:flex; flex-direction:column; gap:10px; align-items:center; pointer-events:none; }
+.notif { display:flex; align-items:center; gap:12px; padding:13px 24px; border-radius:40px; font-family:'JetBrains Mono',monospace; font-size:11.5px; font-weight:600; backdrop-filter:blur(30px); box-shadow:0 10px 50px rgba(0,0,0,.7); pointer-events:auto; transform:translateY(90px) scale(.88); opacity:0; transition:all .4s cubic-bezier(.34,1.56,.64,1); white-space:nowrap; position:relative; }
+.notif.show { transform:translateY(0) scale(1); opacity:1; }
+.notif.success{background:rgba(3,8,18,.97);border:1px solid rgba(0,255,106,.3);color:var(--d);}
+.notif.info{background:rgba(3,8,18,.97);border:1px solid rgba(0,245,228,.3);color:var(--a);}
+.notif.warn{background:rgba(3,8,18,.97);border:1px solid rgba(255,140,0,.3);color:var(--e);}
+.notif.error{background:rgba(3,8,18,.97);border:1px solid rgba(255,0,94,.3);color:var(--c);}
+.ndot { width:7px; height:7px; border-radius:50%; background:currentColor; box-shadow:0 0 10px currentColor; animation:lp 1s infinite; flex-shrink:0; }
+.nprog { position:absolute; bottom:0; left:0; height:2px; background:currentColor; opacity:.35; border-radius:40px; animation:nprog linear forwards; }
+@keyframes nprog{from{width:100%;}to{width:0;}}
+
+.particle { position:fixed; pointer-events:none; z-index:999997; border-radius:50%; animation:pfly .85s ease-out forwards; }
+@keyframes pfly{0%{transform:translate(0,0) scale(1);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) scale(0);opacity:0;}}
+.confetti { position:fixed; pointer-events:none; z-index:999996; animation:cfall var(--dur,1.5s) ease-out forwards; }
+@keyframes cfall{0%{transform:translate(0,0) rotate(0deg);opacity:1;}100%{transform:translate(var(--dx),var(--dy)) rotate(720deg);opacity:0;}}
+
+footer { margin-top:100px; padding:32px 0; border-top:1px solid rgba(255,255,255,0.03); text-align:center; }
+.ftags { display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+.ftag { font-family:'JetBrains Mono',monospace; font-size:9.5px; padding:5px 14px; border-radius:22px; border:1px solid rgba(0,245,228,0.12); color:rgba(0,245,228,0.55); background:rgba(0,245,228,0.025); transition:all var(--t); }
+.ftag:hover { background:rgba(0,245,228,0.08); box-shadow:0 0 16px rgba(0,245,228,0.07); color:var(--a); }
+.fcopy { font-size:10px; color:var(--textd); font-family:'JetBrains Mono',monospace; }
+
+.fav-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.fav-empty { text-align:center; padding:60px; color:var(--textm); font-size:13px; }
+
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--a),var(--b));border-radius:10px;}
+
+.mode-bar {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;
+}
+.mode-btn {
+  background:rgba(0,245,228,0.03); border:1px solid rgba(255,255,255,0.07);
+  border-radius:var(--rs); padding:12px 16px; cursor:none;
+  text-align:right; transition:all var(--t); position:relative; overflow:hidden;
+  color:var(--textm); font-family:'Oxanium',sans-serif; font-size:11px; font-weight:700; letter-spacing:1px;
+}
+.mode-btn .mode-ico { font-size:18px; display:block; margin-bottom:4px; }
+.mode-sub { font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--textd); margin-top:3px; letter-spacing:.5px; }
+.mode-btn:hover { border-color:rgba(0,245,228,0.2); color:var(--text); background:rgba(0,245,228,0.05); }
+.mode-btn.active { border-color:rgba(0,245,228,0.4); color:var(--a); background:rgba(0,245,228,0.07); box-shadow:0 0 20px rgba(0,245,228,0.06); }
+.mode-btn.active::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--a); box-shadow:0 0 10px var(--a); }
+
+.snita {
+  background:rgba(0,245,228,0.025); border:1px solid rgba(255,255,255,0.06);
+  border-radius:var(--rs); color:var(--text);
+  font-family:'JetBrains Mono',monospace; font-size:11px; line-height:1.8;
+  padding:13px 16px; outline:none; transition:all var(--t); width:100%; direction:ltr;
+  resize:none; box-sizing:border-box;
+}
+.snita:focus { border-color:rgba(0,245,228,0.4); background:rgba(0,245,228,0.04); box-shadow:0 0 0 3px rgba(0,245,228,0.07); }
+.snita::placeholder { color:var(--textd); font-size:10px; }
+
+/* ══ PRESET BUTTONS ══ */
+.preset-row { display:flex; gap:6px; }
+.preset-btn {
+  font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:1px;
+  padding:5px 13px; border-radius:7px; cursor:none; transition:all var(--t);
+  display:flex; align-items:center; gap:5px;
+}
+.preset-btn.all { color:var(--a); border:1px solid rgba(0,245,228,0.3); background:rgba(0,245,228,0.05); }
+.preset-btn.all:hover,.preset-btn.all.active { background:rgba(0,245,228,0.15); box-shadow:0 0 14px rgba(0,245,228,0.15); border-color:var(--a); }
+.preset-btn.best { color:#ffd700; border:1px solid rgba(255,215,0,0.3); background:rgba(255,215,0,0.05); }
+.preset-btn.best:hover,.preset-btn.best.active { background:rgba(255,215,0,0.14); box-shadow:0 0 14px rgba(255,215,0,0.15); border-color:#ffd700; }
+.preset-btn.clear { color:var(--c); border:1px solid rgba(255,0,94,0.3); background:rgba(255,0,94,0.04); }
+.preset-btn.clear:hover { background:rgba(255,0,94,0.1); }
+
+@media(max-width:768px){
+  .ch-inner{ flex-direction:column; align-items:stretch; gap:14px; }
+  .ch-flag{ display:flex; align-items:center; justify-content:center; }
+  .ch-btn{ width:100%; flex-direction:row; justify-content:center; padding:14px; gap:10px; }
+  .ch-params{ grid-template-columns:1fr; }
+  .ch-info{ text-align:center; }
+  .ch-badges{ justify-content:center; }
+}
+@media(max-width:600px){
+  header{padding:22px 0 32px;}
+  .logo-title{font-size:24px;}
+  .logo-orb{width:56px;height:56px;}
+  .stats-strip{grid-template-columns:repeat(2,1fr);}
+  .gcard{padding:22px 18px;}
+  .actbar{flex-direction:column;}
+  .abtn{justify-content:center;}
+  .tabbar{gap:2px;}
+  .tabbtn{font-size:9.5px;padding:8px 10px;}
+  .stats-dash{grid-template-columns:1fr;}
+  body{cursor:default;}
+  #cdot,#cring{display:none;}
+  #boot{display:none;}
+  .ch-params{grid-template-columns:1fr;}
+  .mode-bar{grid-template-columns:1fr;}
+  .preset-row{flex-wrap:wrap;}
+  .fgrid{grid-template-columns:1fr;}
+  .hdr-right{gap:5px;}
+  .hbtn{width:38px;height:38px;}
+  .status-live{padding:7px 12px;font-size:9px;}
+}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot-logo">AMYRAX · NEXUS</div>
+  <div class="boot-bar-wrap"><div class="boot-bar"></div></div>
+  <div class="boot-txt">INITIALIZING SECURE CORE · V8</div>
+</div>
+
+<div id="cdot"></div>
+<div id="cring"></div>
+<div class="scan-beam"></div>
+<canvas id="hex-canvas"></canvas>
+<canvas id="plasma-canvas"></canvas>
+
+<div class="aurora">
+  <div class="abl"></div><div class="abl"></div><div class="abl"></div><div class="abl"></div><div class="abl"></div>
+</div>
+
+<svg class="cdeco tl" width="80" height="80" viewBox="0 0 80 80" fill="none">
+  <path d="M0 50 L0 0 L50 0" stroke="#00f5e4" stroke-width="1.5"/>
+  <path d="M0 24 L0 0 L24 0" stroke="#00f5e4" stroke-width="0.5"/>
+  <circle cx="0" cy="0" r="4.5" fill="#00f5e4"/>
+  <circle cx="0" cy="0" r="2" fill="#000"/>
+  <circle cx="50" cy="0" r="2" fill="#00f5e4" opacity=".5"/>
+  <circle cx="0" cy="50" r="2" fill="#00f5e4" opacity=".5"/>
+</svg>
+<svg class="cdeco tr" width="80" height="80" viewBox="0 0 80 80" fill="none">
+  <path d="M0 50 L0 0 L50 0" stroke="#8000ff" stroke-width="1.5"/>
+  <circle cx="0" cy="0" r="4.5" fill="#8000ff"/>
+</svg>
+<svg class="cdeco bl" width="80" height="80" viewBox="0 0 80 80" fill="none">
+  <path d="M0 50 L0 0 L50 0" stroke="#ff005e" stroke-width="1.5"/>
+  <circle cx="0" cy="0" r="4.5" fill="#ff005e"/>
+</svg>
+<svg class="cdeco br" width="80" height="80" viewBox="0 0 80 80" fill="none">
+  <path d="M0 50 L0 0 L50 0" stroke="#00ff6a" stroke-width="1.5"/>
+  <circle cx="0" cy="0" r="4.5" fill="#00ff6a"/>
+</svg>
+
+<div class="wrapper">
+  <header>
+    <a class="logo-wrap" href="#">
+      <div class="logo-orb">
+        <div class="logo-orb-inner">
+          <svg class="logo-shield" viewBox="0 0 36 36" fill="none">
+            <path d="M18 2L30 8V18C30 24.5 24.5 29.5 18 32C11.5 29.5 6 24.5 6 18V8L18 2Z" stroke="#00f5e4" stroke-width="1.5" fill="rgba(0,245,228,0.07)"/>
+            <path d="M18 9L24 12V18C24 22 21.5 25 18 26.5C14.5 25 12 22 12 18V12L18 9Z" fill="rgba(0,245,228,0.13)" stroke="#00f5e4" stroke-width=".8"/>
+            <path d="M18 14L21 15.5V18C21 19.8 19.9 21.2 18 22C16.1 21.2 15 19.8 15 18V15.5L18 14Z" fill="rgba(0,245,228,0.25)"/>
+            <circle cx="18" cy="18" r="2.2" fill="#00f5e4"/>
+            <circle cx="18" cy="18" r=".9" fill="#000"/>
+          </svg>
+        </div>
+      </div>
+      <div class="logo-text-group">
+        <div class="logo-title"><span class="l1">Amyrax</span><span class="l2">VPN</span></div>
+        <div class="logo-sub">NEXUS · Config Generator · V8</div>
+      </div>
+    </a>
+    <div class="hdr-right">
+      <div class="status-live"><div class="live-pulse"></div><span>LIVE</span></div>
+      <button class="hbtn" id="notifBtn" title="نوتیف مرورگر"><span>🔔</span></button>
+      <button class="hbtn" id="soundBtn" title="صدا"><span>🔊</span></button>
+      <button class="hbtn" id="themeBtn" title="تم"><span>🎨</span></button>
+    </div>
+  </header>
+
+  <div class="stats-strip">
+    <div class="stat-b"><div class="stat-num" id="s-total" data-target="0">0</div><div class="stat-lbl">Total Configs</div></div>
+    <div class="stat-b"><div class="stat-num" id="s-domains" data-target="49">0</div><div class="stat-lbl">Domains / SNI</div></div>
+    <div class="stat-b"><div class="stat-num" id="s-ips" data-target="37">0</div><div class="stat-lbl">IP Nodes</div></div>
+    <div class="stat-b"><div class="stat-num" id="s-stars" data-target="0">0</div><div class="stat-lbl">Favorites ⭐</div></div>
+  </div>
+
+  <div class="ndiv"></div>
+
+  <!-- ══ CHANNEL SERVER CARD ══ -->
+  <div class="channel-card" id="channelCard">
+    <div class="ch-inner">
+      <div class="ch-flag">
+  <svg width="54" height="54" viewBox="0 0 54 54" style="border-radius:10px;overflow:hidden;display:block;box-shadow:0 0 24px rgba(0,85,164,0.5),0 0 50px rgba(0,85,164,0.2);">
+    <rect x="0" y="0" width="18" height="54" fill="#002395"/>
+    <rect x="18" y="0" width="18" height="54" fill="#EDEDED"/>
+    <rect x="36" y="0" width="18" height="54" fill="#ED2939"/>
+  </svg>
+</div>
+      <div class="ch-info">
+        <div class="ch-title">🛡️ AmyraxVPN · سرور رسمی کانال</div>
+        <div class="ch-sub">سرور پابلیک فرانسه · فقط دامنه نتلیفای خودتون رو وارد کنید<br>بقیه فیلدها رو این دکمه خودکار پر می‌کنه 👇</div>
+        <div class="ch-badges">
+          <span class="ch-badge fr">🇫🇷 France</span>
+          <span class="ch-badge live">🟢 Online</span>
+          <span class="ch-badge free">✨ Free</span>
+          <span class="ch-badge tg">📢 @AmyraxVPN</span>
+        </div>
+        <div class="ch-params">
+          <div class="ch-param"><span class="ch-param-key">UUID</span><span class="ch-param-val">AmyraxVPN-AmyraxConfig</span></div>
+          <div class="ch-param"><span class="ch-param-key">PATH</span><span class="ch-param-val">/AmyraxVPN-AmyraxConfig</span></div>
+          <div class="ch-param"><span class="ch-param-key">PaddingKey</span><span class="ch-param-val">freedom</span></div>
+          <div class="ch-param"><span class="ch-param-key">Backend</span><span class="ch-param-val">panel.wowad.cam</span></div>
+        </div>
+      </div>
+      <button class="ch-btn" onclick="fillChannelServer()" id="chFillBtn">
+        <span style="font-size:22px;">⚡</span>
+        <span>اعمال سرور کانال</span>
+        <span class="ch-btn-sub">AUTO FILL</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="gcard" id="formCard">
+    <div class="gcard-glow"></div>
+    <div class="card-shim"></div>
+    <div class="slbl">
+      <div class="slbl-ico">⚙️</div>
+      <span class="slbl-txt">Config Parameters</span>
+      <div class="slbl-line"></div>
+      <span class="kbd">Enter ↵</span>
+    </div>
+
+    <div class="mode-bar">
+      <button class="mode-btn active" id="mode-normal" onclick="setMode('normal')">
+        <span class="mode-ico">🌐</span> Normal
+        <div class="mode-sub">آدرس = SNI</div>
+      </button>
+      <button class="mode-btn" id="mode-shecan" onclick="setMode('shecan')">
+        <span class="mode-ico">🛡️</span> Shecan
+        <div class="mode-sub">IP جداگانه + SNI</div>
+      </button>
+    </div>
+
+    <div class="fgrid">
+      <div class="field ff">
+        <label>🔑 UUID <span style="color:var(--c);font-size:9px;padding:1px 9px;border:1px solid rgba(255,0,94,.2);border-radius:5px;background:rgba(255,0,94,.05);">REQUIRED</span></label>
+        <div class="ishell"><input type="text" id="uid" placeholder="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx" spellcheck="false" autocomplete="off"></div>
+      </div>
+      <div class="field">
+        <label>✏️ Config Name</label>
+        <div class="ishell"><input type="text" id="cfgName" placeholder="مثال: Amir-Server" spellcheck="false"></div>
+      </div>
+      <div class="field">
+        <label>📂 Path</label>
+        <div class="ishell"><input type="text" id="cfgPath" placeholder="مثال: /Masir" spellcheck="false"></div>
+      </div>
+      <div class="field ff">
+        <label>🖥️ Server Address <span style="color:var(--e);font-size:9px;padding:1px 9px;border:1px solid rgba(255,140,0,.2);border-radius:5px;background:rgba(255,140,0,.05);">Backend · x-host header</span></label>
+        <div class="ishell"><input type="text" id="cfgServerAddr" placeholder="مثال: https://sub.domain.com:443 یا http://1.2.3.4:444" spellcheck="false" autocomplete="off" dir="ltr"></div>
+      </div>
+      <div class="field ff">
+        <label>🌐 Host / SNI Domain <span style="color:var(--d);font-size:9px;padding:1px 9px;border:1px solid rgba(0,255,106,.2);border-radius:5px;background:rgba(0,255,106,.04);">دامنه نتلیفای شما</span></label>
+        <div class="ishell"><input type="text" id="cfgHost" placeholder="مثال: your-app.netlify.app یا sub.domain.com" spellcheck="false"></div>
+      </div>
+      <div class="field">
+        <label>🔑 Padding Key <span style="color:var(--textm);font-size:9px;padding:1px 9px;border:1px solid rgba(0,245,228,.15);border-radius:5px;background:rgba(0,245,228,.04);">xPaddingKey</span></label>
+        <div class="ishell"><input type="text" id="cfgPaddingKey" placeholder="مثال: AmyraxVPN" spellcheck="false" autocomplete="off" dir="ltr"></div>
+      </div>
+      <div class="field">
+        <label>🏷️ Padding Header <span style="color:var(--textm);font-size:9px;padding:1px 9px;border:1px solid rgba(0,245,228,.15);border-radius:5px;background:rgba(0,245,228,.04);">xPaddingHeader</span></label>
+        <div class="ishell"><input type="text" id="cfgPaddingHeader" placeholder="مثال: AmyraxVPN" spellcheck="false" autocomplete="off" dir="ltr"></div>
+      </div>
+    </div>
+
+    <!-- SNI DOMAIN LIST -->
+    <div class="field" style="margin-top:18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <label style="margin:0;">📡 SNI Domains</label>
+        <div class="preset-row">
+          <button class="preset-btn all" id="sniBtnAll" onclick="loadSNI('all')">📋 ALL <span style="opacity:.6;font-size:8px;">(49)</span></button>
+          <button class="preset-btn best" id="sniBtnBest" onclick="loadSNI('best')">⭐ BEST <span style="opacity:.6;font-size:8px;">(7)</span></button>
+          <button class="preset-btn clear" onclick="clearSNI()">✕ Clear</button>
+        </div>
+      </div>
+      <textarea id="sniList" class="snita" placeholder="هر دامنه یک خط..." spellcheck="false" rows="5"></textarea>
+    </div>
+
+    <!-- IP LIST (Shecan only) -->
+    <div class="field" id="ip-field" style="margin-top:14px;display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <label style="margin:0;color:var(--d);">🖥️ IP Nodes <span style="font-size:9px;opacity:.6;">(Shecan)</span></label>
+        <div class="preset-row">
+          <button class="preset-btn all" id="ipBtnAll" onclick="loadIPs('all')">📋 ALL <span style="opacity:.6;font-size:8px;">(37)</span></button>
+          <button class="preset-btn best" id="ipBtnBest" onclick="loadIPs('best')">⭐ BEST <span style="opacity:.6;font-size:8px;">(11)</span></button>
+          <button class="preset-btn clear" onclick="document.getElementById('ipList').value='';updateGenBtn()">✕ Clear</button>
+        </div>
+      </div>
+      <textarea id="ipList" class="snita" placeholder="هر IP یک خط..." spellcheck="false" rows="4" style="border-color:rgba(0,255,106,0.18);"></textarea>
+    </div>
+
+    <div class="genwrap">
+      <div class="genbtn-glow"></div>
+      <button class="genbtn" id="generateBtn">
+        <div class="genbtn-bg"></div>
+        <span class="gbico">⚡</span>
+        <span class="gbtxt" id="gbtxt">ساخت · GENERATE CONFIGS</span>
+      </button>
+      <div class="pbar-wrap" id="pbarWrap"><div class="pbar" id="pbar"></div></div>
+    </div>
+    <div class="terminal" id="terminal"></div>
+  </div>
+
+  <div id="results">
+    <div class="empty-state">
+      <div class="e-rings">
+        <div class="ering"></div><div class="ering"></div><div class="ering"></div>
+        <div class="eico">🛡️</div>
+      </div>
+      <h3 class="etitle">READY TO GENERATE</h3>
+      <p class="esub">اطلاعات را وارد کنید و دکمه Generate را بزنید تا کانفیگ‌های VLESS حرفه‌ای ساخته شود.<br><br>
+      برای استفاده از سرور کانال AmyraxVPN دکمه <strong style="color:var(--a)">«اعمال سرور کانال»</strong> رو بزنید.</p>
+      <div class="etags">
+        <span class="etag">🇫🇷 France Server</span><span class="etag">VLESS + TLS</span>
+        <span class="etag">49 SNI · 37 IPs</span><span class="etag">ALL / BEST</span>
+        <span class="etag">ZIP Export</span><span class="etag">Auto Fill</span>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="ftags" id="ftags"></div>
+    <div class="fcopy" id="fcopy"></div>
+  </footer>
+</div>
+
+<div id="notifstack"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+/* ══ BRAND ══ */
+const _B=[64,65,109,121,114,97,120,86,80,78],_C=[64,65,109,121,114,97,120,67,111,110,102,105,103],_A=[65,109,105,114];
+const _d=a=>a.map(c=>String.fromCharCode(c)).join('');
+const BRAND=Object.freeze({tag1:_d(_B),tag2:_d(_C),author:_d(_A),get copy(){return`© 2025 ${this.author} · ${this.tag1} · ${this.tag2}`;}});
+
+/* ══ CHANNEL SERVER ══ */
+const CHANNEL_SERVER = {
+  uuid: 'AmyraxVPN-AmyraxConfig',
+  name: '🇫🇷 AmyraxVPN',
+  path: '/AmyraxVPN-AmyraxConfig',
+  serverAddr: 'https://panel.wowad.cam',
+  paddingKey: 'freedom',
+  paddingHeader: 'freedom',
+};
+
+function fillChannelServer() {
+  document.getElementById('uid').value = CHANNEL_SERVER.uuid;
+  document.getElementById('cfgName').value = CHANNEL_SERVER.name;
+  document.getElementById('cfgPath').value = CHANNEL_SERVER.path;
+  document.getElementById('cfgServerAddr').value = CHANNEL_SERVER.serverAddr;
+  document.getElementById('cfgPaddingKey').value = CHANNEL_SERVER.paddingKey;
+  document.getElementById('cfgPaddingHeader').value = CHANNEL_SERVER.paddingHeader;
+  // host را خالی بگذاریم تا کاربر دامنه نتلیفای خودش رو بزنه
+  const hostEl = document.getElementById('cfgHost');
+  if (!hostEl.value) hostEl.style.borderColor = 'rgba(0,245,228,0.6)';
+  hostEl.focus();
+
+  // animate the card
+  const btn = document.getElementById('chFillBtn');
+  btn.style.background = 'linear-gradient(135deg,var(--a),var(--b))';
+  btn.style.color = '#000';
+  setTimeout(() => {
+    btn.style.background = '';
+    btn.style.color = '';
+  }, 800);
+
+  const r = btn.getBoundingClientRect();
+  particles(r.left + r.width/2, r.top + r.height/2, 20);
+  snd('success');
+  showNotif('✅ اطلاعات سرور کانال اعمال شد · فقط دامنه نتلیفای رو وارد کنید', 'success', 4500);
+  updateGenBtn();
+}
+
+/* ══ SNI DATA ══ */
+const SNI_ALL = [
+  'helm.sh','keda.sh','rook.io','istio.io','cilium.io','vuejs.org','nuxt.com','nuxr.com',
+  'vitejs.dev','smashingmagazine.com','pnpm.io','fluxcd.io','harbor.io','calico.org',
+  'linkerd.io','openebs.io','tekton.dev','longhorn.io','blog.helm.sh','docs.helm.sh',
+  'crossplane.io','kubernetes.io','kubebuilder.io','cert-manager.io','letsencrypt.org',
+  'kind.sigs.k8s.io','kops.sigs.k8s.io','krew.sigs.k8s.io','kwok.sigs.k8s.io',
+  'kueue.sigs.k8s.io','jobset.sigs.k8s.io','kaniko.sigs.k8s.io','minikube.sigs.k8s.io',
+  'operatorframework.io','container.sigs.k8s.io','kustomize.sigs.k8s.io',
+  'argo-cd.readthedocs.io','cluster-api.sigs.k8s.io','descheduler.sigs.k8s.io',
+  'gateway-api.sigs.k8s.io','external-dns.sigs.k8s.io','service-apis.sigs.k8s.io',
+  'image-builder.sigs.k8s.io','kubectl.docs.kubernetes.io','metrics-server.sigs.k8s.io',
+  'scheduler-plugins.sigs.k8s.io','controller-runtime.sigs.k8s.io',
+  'prometheus-operator.sigs.k8s.io','node-feature-discovery.sigs.k8s.io',
+  'hierarchical-namespaces.sigs.k8s.io','secrets-store-csi-driver.sigs.k8s.io',
+  'security-profiles-operator.sigs.k8s.io','cluster-proportional-autoscaler.sigs.k8s.io',
+];
+
+const SNI_BEST = [
+  'jobset.sigs.k8s.io','kind.sigs.k8s.io','vuejs.org',
+  'cluster-api.sigs.k8s.io','kubernetes.io','gateway-api.sigs.k8s.io','letsencrypt.org',
+];
+
+/* ══ IP DATA ══ */
+const IP_ALL = [
+  '50.7.5.83','50.7.87.2','50.7.87.3','50.7.87.4','50.7.87.5','75.2.60.5',
+  '144.76.1.88','104.21.33.34','188.114.98.0','188.114.99.0',
+  '3.162.247.34','3.162.247.38','3.162.247.45','3.162.247.77',
+  '3.33.186.135','63.176.8.218','85.10.207.48','94.130.33.41','95.216.69.37',
+  '104.198.14.52','104.21.63.202','15.197.167.90','172.67.150.14','204.12.196.34',
+  '35.157.26.135','52.222.214.38','52.222.214.99','54.232.119.62',
+  '65.109.34.234','94.130.70.160','138.201.54.122','142.54.178.211',
+  '172.67.158.128','184.171.110.10','52.222.214.108','52.222.214.124','63.141.252.203',
+];
+
+const IP_BEST = [
+  '65.109.34.234','94.130.70.160','63.141.252.203','94.130.50.12',
+  '50.7.5.83','142.54.178.211','94.130.33.41','144.76.1.88',
+  '138.201.54.122','95.216.69.37','94.130.13.19',
+];
+
+/* ══ DOMAIN META MAP ══ */
+const DOMAIN_META = {
+  'kubernetes.io':{emoji:'🚀',label:'Kubernetes Core'},
+  'helm.sh':{emoji:'⚓',label:'Helm'},
+  'letsencrypt.org':{emoji:'🔐',label:"Let's Encrypt"},
+  'docs.helm.sh':{emoji:'📘',label:'Helm Docs'},
+  'kubectl.docs.kubernetes.io':{emoji:'🎯',label:'Kubectl Docs'},
+  'blog.helm.sh':{emoji:'📝',label:'Helm Blog'},
+  'kind.sigs.k8s.io':{emoji:'🌀',label:'Kind SIGS'},
+  'cluster-api.sigs.k8s.io':{emoji:'🔮',label:'Cluster API'},
+  'krew.sigs.k8s.io':{emoji:'🛸',label:'Krew'},
+  'gateway-api.sigs.k8s.io':{emoji:'🌐',label:'Gateway API'},
+  'scheduler-plugins.sigs.k8s.io':{emoji:'⚡',label:'Scheduler Plugins'},
+  'kustomize.sigs.k8s.io':{emoji:'🎨',label:'Kustomize'},
+  'image-builder.sigs.k8s.io':{emoji:'🏗️',label:'Image Builder'},
+  'jobset.sigs.k8s.io':{emoji:'📦',label:'JobSet SIGS'},
+  'keda.sh':{emoji:'📈',label:'KEDA'},
+  'rook.io':{emoji:'♟️',label:'Rook'},
+  'istio.io':{emoji:'🕸️',label:'Istio'},
+  'cilium.io':{emoji:'🔷',label:'Cilium'},
+  'vuejs.org':{emoji:'💚',label:'Vue.js'},
+  'nuxt.com':{emoji:'🟢',label:'Nuxt'},
+  'nuxr.com':{emoji:'🟩',label:'Nuxr'},
+  'vitejs.dev':{emoji:'⚡',label:'Vite'},
+  'smashingmagazine.com':{emoji:'💡',label:'Smashing Magazine'},
+  'pnpm.io':{emoji:'📦',label:'pnpm'},
+  'fluxcd.io':{emoji:'🌊',label:'FluxCD'},
+  'harbor.io':{emoji:'🚢',label:'Harbor'},
+  'calico.org':{emoji:'🐾',label:'Calico'},
+  'linkerd.io':{emoji:'🔗',label:'Linkerd'},
+  'openebs.io':{emoji:'💾',label:'OpenEBS'},
+  'tekton.dev':{emoji:'🔧',label:'Tekton'},
+  'longhorn.io':{emoji:'🦏',label:'Longhorn'},
+  'crossplane.io':{emoji:'✖️',label:'Crossplane'},
+  'kubebuilder.io':{emoji:'🏗️',label:'KubeBuilder'},
+  'cert-manager.io':{emoji:'📜',label:'Cert-Manager'},
+  'kops.sigs.k8s.io':{emoji:'🚀',label:'KOPS'},
+  'kwok.sigs.k8s.io':{emoji:'🦜',label:'KWOK'},
+  'kueue.sigs.k8s.io':{emoji:'⏳',label:'Kueue'},
+  'kaniko.sigs.k8s.io':{emoji:'🏗️',label:'Kaniko'},
+  'minikube.sigs.k8s.io':{emoji:'🖥️',label:'Minikube'},
+  'operatorframework.io':{emoji:'🤖',label:'Operator Framework'},
+  'container.sigs.k8s.io':{emoji:'📦',label:'Container SIGS'},
+  'argo-cd.readthedocs.io':{emoji:'🔄',label:'ArgoCD'},
+  'descheduler.sigs.k8s.io':{emoji:'⚖️',label:'Descheduler'},
+  'external-dns.sigs.k8s.io':{emoji:'🌍',label:'External DNS'},
+  'service-apis.sigs.k8s.io':{emoji:'🔌',label:'Service APIs'},
+  'metrics-server.sigs.k8s.io':{emoji:'📊',label:'Metrics Server'},
+  'controller-runtime.sigs.k8s.io':{emoji:'🎮',label:'Controller Runtime'},
+  'prometheus-operator.sigs.k8s.io':{emoji:'📉',label:'Prometheus Operator'},
+  'node-feature-discovery.sigs.k8s.io':{emoji:'🔍',label:'Node Feature Discovery'},
+  'hierarchical-namespaces.sigs.k8s.io':{emoji:'🗂️',label:'HNC'},
+  'secrets-store-csi-driver.sigs.k8s.io':{emoji:'🔒',label:'Secrets Store CSI'},
+  'security-profiles-operator.sigs.k8s.io':{emoji:'🛡️',label:'Security Profiles'},
+  'cluster-proportional-autoscaler.sigs.k8s.io':{emoji:'📐',label:'Proportional Autoscaler'},
+};
+
+function getDomainMeta(d) {
+  return DOMAIN_META[d] || {emoji:'🌐', label: d.split('.').slice(-2,-1)[0] || d};
+}
+
+/* ══ SNI / IP PRESET LOADERS ══ */
+let activeSniPreset = null;
+let activeIpPreset = null;
+
+function loadSNI(preset) {
+  activeSniPreset = preset;
+  document.getElementById('sniBtnAll').classList.toggle('active', preset==='all');
+  document.getElementById('sniBtnBest').classList.toggle('active', preset==='best');
+  if (preset === 'all') {
+    document.getElementById('sniList').value = SNI_ALL.join('\n');
+    showNotif(`📋 همه ${SNI_ALL.length} دامنه لود شد`, 'info', 2000);
+  } else {
+    document.getElementById('sniList').value = SNI_BEST.join('\n');
+    showNotif(`⭐ ${SNI_BEST.length} دامنه برتر لود شد`, 'success', 2000);
+  }
+  snd('click');
+  updateGenBtn();
+}
+
+function clearSNI() {
+  document.getElementById('sniList').value = '';
+  activeSniPreset = null;
+  document.getElementById('sniBtnAll').classList.remove('active');
+  document.getElementById('sniBtnBest').classList.remove('active');
+  updateGenBtn();
+}
+
+function loadIPs(preset) {
+  activeIpPreset = preset;
+  document.getElementById('ipBtnAll').classList.toggle('active', preset==='all');
+  document.getElementById('ipBtnBest').classList.toggle('active', preset==='best');
+  if (preset === 'all') {
+    document.getElementById('ipList').value = IP_ALL.join('\n');
+    showNotif(`📋 همه ${IP_ALL.length} IP لود شد`, 'info', 2000);
+  } else {
+    document.getElementById('ipList').value = IP_BEST.join('\n');
+    showNotif(`⭐ ${IP_BEST.length} IP برتر لود شد`, 'success', 2000);
+  }
+  snd('click');
+  updateGenBtn();
+}
+
+/* ══ MODE STATE ══ */
+let currentMode = 'normal';
+
+function setMode(m) {
+  currentMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + m).classList.add('active');
+  document.getElementById('ip-field').style.display = (m === 'shecan') ? 'block' : 'none';
+  updateGenBtn();
+  snd('click');
+}
+
+function updateGenBtn() {
+  const gt = document.getElementById('gbtxt');
+  const snis = (document.getElementById('sniList').value.trim().split('\n').filter(x => x.trim()).length) || 0;
+  const T = 1;
+  if (currentMode === 'shecan') {
+    const ips = (document.getElementById('ipList').value.trim().split('\n').filter(x => x.trim()).length) || 0;
+    gt.textContent = `ساخت · GENERATE ${(snis * ips + snis) * T} CONFIGS`;
+  } else {
+    gt.textContent = `ساخت · GENERATE ${snis * T} CONFIGS`;
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  // Default: BEST preset
+  loadSNI('best');
+  loadIPs('best');
+  setMode('normal');
+});
+
+// Live update count on textarea change
+document.addEventListener('DOMContentLoaded', () => {
+  ['sniList','ipList'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', updateGenBtn);
+  });
+});
+
+/* ══ CURSOR ══ */
+(function() {
+  const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx + 'px'; dot.style.top = my + 'px'; });
+  (function anim() { rx += (mx - rx) * .11; ry += (my - ry) * .11; ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; requestAnimationFrame(anim); })();
+  function attach(el) { if (el._hb) return; el._hb = true; el.addEventListener('mouseenter', () => document.body.classList.add('ch')); el.addEventListener('mouseleave', () => document.body.classList.remove('ch')); }
+  document.querySelectorAll('button,input,a').forEach(attach);
+  new MutationObserver(() => document.querySelectorAll('button,input,a').forEach(attach)).observe(document.body, {childList: true, subtree: true});
+})();
+
+/* ══ 3D TILT ══ */
+(function() {
+  const card = document.getElementById('formCard');
+  if (!card) return;
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5;
+    const y = (e.clientY - r.top) / r.height - .5;
+    card.style.transform = `perspective(1200px) rotateY(${x * 3}deg) rotateX(${-y * 2}deg)`;
+  });
+  card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1200px) rotateY(0) rotateX(0)'; });
+})();
+
+/* ══ RIPPLE ══ */
+document.addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const r = document.createElement('div'); r.className = 'ripple';
+  const rect = btn.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height) * 2;
+  r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - rect.left - size/2}px;top:${e.clientY - rect.top - size/2}px;`;
+  btn.appendChild(r); setTimeout(() => r.remove(), 700);
+});
+
+/* ══ COUNT-UP ══ */
+function countUp(el, target, dur = 1300) {
+  const steps = 70; const inc = target / steps; let cur = 0;
+  const ti = setInterval(() => { cur = Math.min(cur + inc, target); el.textContent = Math.round(cur); if (cur >= target) { clearInterval(ti); el.textContent = target; } }, dur / steps);
+}
+const cobs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { countUp(e.target, +e.target.dataset.target); cobs.unobserve(e.target); } });
+}, {threshold: .5});
+document.querySelectorAll('[data-target]').forEach(el => cobs.observe(el));
+
+/* ══ HEX CANVAS ══ */
+(function() {
+  const canvas = document.getElementById('hex-canvas'); const ctx = canvas.getContext('2d');
+  let W, H, hexes = []; let mx = 0, my = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function resize() {
+    W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; hexes = [];
+    const size = 40, rows = Math.ceil(H / (size * 1.73)) + 2, cols = Math.ceil(W / (size * 2)) + 2;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const x = c * size * 2 + (r % 2) * size, y = r * size * 1.73;
+      hexes.push({x, y, size, phase: Math.random() * Math.PI * 2, speed: .25 + Math.random() * .35, baseAlpha: Math.random() * .032 + .006});
+    }
+  }
+  window.addEventListener('resize', resize); resize();
+  function hexPath(cx, cy, s) { ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i - Math.PI / 6; ctx.lineTo(cx + s * Math.cos(a), cy + s * Math.sin(a)); } ctx.closePath(); }
+  let t = 0;
+  function draw() {
+    ctx.clearRect(0, 0, W, H); t += .007;
+    hexes.forEach(h => {
+      const dist = Math.hypot(h.x - mx, h.y - my);
+      const glow = Math.max(0, 1 - dist / 260) * 0.2;
+      const pulse = Math.sin(t * h.speed + h.phase) * 0.01;
+      const alpha = h.baseAlpha + glow + pulse;
+      if (alpha < .003) return;
+      ctx.strokeStyle = `rgba(0,245,228,${alpha})`; ctx.lineWidth = .7;
+      hexPath(h.x, h.y, h.size); ctx.stroke();
+      if (glow > .06) { ctx.fillStyle = `rgba(0,245,228,${glow * .1})`; hexPath(h.x, h.y, h.size); ctx.fill(); }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══ PLASMA CANVAS ══ */
+(function() {
+  const canvas = document.getElementById('plasma-canvas'); const ctx = canvas.getContext('2d');
+  let W, H;
+  window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+  W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight;
+  let t = 0;
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function draw() {
+    const img = ctx.createImageData(W >> 2, H >> 2); const d = img.data;
+    for (let y = 0; y < H >> 2; y++) for (let x = 0; x < W >> 2; x++) {
+      const v = Math.sin(x * .08 + t) + Math.sin(y * .06 + t * .7) + Math.sin((x + y) * .05 + t * .5) + Math.sin(Math.sqrt((x - W / 8) * (x - W / 8) + (y - H / 8) * (y - H / 8)) * .1 + t * .3);
+      const n = (v + 4) / 8; const i = (y * (W >> 2) + x) * 4;
+      d[i] = lerp(0, 128, n) * n * .14; d[i + 1] = lerp(245, 0, n) * n * .14; d[i + 2] = lerp(228, 255, n) * n * .14; d[i + 3] = 255;
+    }
+    const tmp = document.createElement('canvas'); tmp.width = W >> 2; tmp.height = H >> 2;
+    tmp.getContext('2d').putImageData(img, 0, 0);
+    ctx.clearRect(0, 0, W, H); ctx.drawImage(tmp, 0, 0, W, H);
+    t += .016; requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══ SOUND ══ */
+let actx = null, soundOn = true;
+function getACtx() { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); return actx; }
+function snd(type) {
+  if (!soundOn) return; try {
+    const ctx = getACtx(), o = ctx.createOscillator(), g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination); const now = ctx.currentTime;
+    if (type === 'click') { o.type = 'sine'; o.frequency.setValueAtTime(880, now); o.frequency.exponentialRampToValueAtTime(440, now + .09); g.gain.setValueAtTime(.09, now); g.gain.exponentialRampToValueAtTime(.001, now + .11); o.start(now); o.stop(now + .11); }
+    else if (type === 'success') { o.type = 'sine'; [523, 659, 784, 1047].forEach((f, i) => o.frequency.setValueAtTime(f, now + i * .1)); g.gain.setValueAtTime(.16, now); g.gain.exponentialRampToValueAtTime(.001, now + .55); o.start(now); o.stop(now + .55); }
+    else if (type === 'copy') { o.type = 'square'; o.frequency.setValueAtTime(1200, now); o.frequency.exponentialRampToValueAtTime(850, now + .05); g.gain.setValueAtTime(.045, now); g.gain.exponentialRampToValueAtTime(.001, now + .08); o.start(now); o.stop(now + .08); }
+    else if (type === 'error') { o.type = 'sawtooth'; o.frequency.setValueAtTime(180, now); o.frequency.setValueAtTime(120, now + .1); g.gain.setValueAtTime(.09, now); g.gain.exponentialRampToValueAtTime(.001, now + .24); o.start(now); o.stop(now + .24); }
+    else if (type === 'star') { o.type = 'sine'; o.frequency.setValueAtTime(1100, now); o.frequency.exponentialRampToValueAtTime(1900, now + .13); g.gain.setValueAtTime(.07, now); g.gain.exponentialRampToValueAtTime(.001, now + .2); o.start(now); o.stop(now + .2); }
+  } catch (e) {}
+}
+document.getElementById('soundBtn').addEventListener('click', () => {
+  soundOn = !soundOn; document.getElementById('soundBtn').querySelector('span').textContent = soundOn ? '🔊' : '🔇';
+  showNotif(soundOn ? '🔊 صدا فعال' : '🔇 صدا خاموش', 'info'); snd('click');
+});
+
+/* ══ BROWSER NOTIF ══ */
+let notifOK = false;
+async function reqNotif() {
+  if (!('Notification' in window)) { showNotif('⚠️ مرورگر نوتیف ندارد', 'warn'); return; }
+  if (Notification.permission === 'granted') { notifOK = true; showNotif('✅ نوتیف‌ها فعال', 'success'); return; }
+  const p = await Notification.requestPermission(); notifOK = p === 'granted';
+  showNotif(notifOK ? '🔔 نوتیف فعال شد!' : '❌ اجازه داده نشد', notifOK ? 'success' : 'error');
+  if (notifOK) new Notification('AmyraxVPN NEXUS V8', {body: 'نوتیف‌ها فعال شدند ✅'});
+}
+function bnotif(title, body) { if (notifOK && document.hidden) { try { new Notification(title, {body}); } catch (e) {} } }
+document.getElementById('notifBtn').addEventListener('click', () => { reqNotif(); snd('click'); });
+setTimeout(() => { if (Notification.permission === 'default') showNotif('🔔 کلیک کنید تا نوتیف فعال شود', 'info'); else if (Notification.permission === 'granted') notifOK = true; }, 2800);
+
+/* ══ IN-APP NOTIF ══ */
+function showNotif(msg, type = 'info', dur = 3000) {
+  const s = document.getElementById('notifstack');
+  const n = document.createElement('div'); n.className = `notif ${type}`;
+  n.innerHTML = `<div class="ndot"></div><span>${msg}</span>`;
+  const p = document.createElement('div'); p.className = 'nprog'; p.style.animationDuration = dur + 'ms'; n.appendChild(p);
+  s.appendChild(n); requestAnimationFrame(() => requestAnimationFrame(() => n.classList.add('show')));
+  setTimeout(() => { n.classList.remove('show'); setTimeout(() => n.remove(), 500); }, dur);
+}
+
+/* ══ TERMINAL ══ */
+let tlines = 0;
+function tlog(msg, cls = 'tinf') {
+  const t = document.getElementById('terminal');
+  if (!t.classList.contains('on')) t.classList.add('on');
+  const l = document.createElement('div'); l.className = `tline ${cls}`;
+  l.style.animationDelay = `${tlines * 32}ms`;
+  l.innerHTML = `<span style="color:var(--textm)">[${new Date().toLocaleTimeString('fa-IR')}]</span> ${msg}`;
+  t.appendChild(l); t.scrollTop = t.scrollHeight; tlines++;
+}
+function clearTerm() { const t = document.getElementById('terminal'); t.innerHTML = ''; tlines = 0; t.classList.remove('on'); }
+
+/* ══ PARTICLES ══ */
+function particles(x, y, n = 16) {
+  const cols = ['#00f5e4', '#8000ff', '#ff005e', '#00ff6a', '#ff8c00', '#ffffff', '#e8ff00'];
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div'); p.className = 'particle';
+    const a = (Math.PI * 2 * i) / n + Math.random() * .6; const d = 60 + Math.random() * 90; const sz = 2 + Math.random() * 5;
+    p.style.cssText = `left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${cols[i % cols.length]};box-shadow:0 0 8px ${cols[i % cols.length]};--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px;`;
+    document.body.appendChild(p); setTimeout(() => p.remove(), 1000);
+  }
+}
+function confetti(x, y) {
+  const cols = ['#00f5e4', '#8000ff', '#ff005e', '#00ff6a', '#ff8c00', '#ffffff', '#ffd700', '#e8ff00'];
+  for (let i = 0; i < 90; i++) {
+    const c = document.createElement('div'); c.className = 'confetti';
+    const a = Math.random() * Math.PI * 2; const d = 240 + Math.random() * 480;
+    const col = cols[Math.floor(Math.random() * cols.length)]; const dur = (.8 + Math.random() * 1.5) + 's';
+    c.style.cssText = `left:${x}px;top:${y}px;width:${4 + Math.random() * 7}px;height:${4 + Math.random() * 7}px;background:${col};border-radius:${Math.random() > .5 ? '50%' : '2px'};--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d - 280}px;--dur:${dur};animation-duration:${dur};`;
+    document.body.appendChild(c); setTimeout(() => c.remove(), 2400);
+  }
+}
+
+/* ══ COPY ══ */
+function copyText(text, btn) {
+  const ok = () => {
+    if (btn) { const orig = btn.innerHTML; btn.innerHTML = '✅'; const r = btn.getBoundingClientRect(); particles(r.left + r.width / 2, r.top + r.height / 2, 8); setTimeout(() => { btn.innerHTML = orig; }, 1900); }
+    snd('copy'); showNotif('✅ کپی شد!', 'success', 2000);
+  };
+  navigator.clipboard?.writeText(text).then(ok).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+    document.body.appendChild(ta); ta.focus(); ta.select(); try { document.execCommand('copy'); ok(); } catch { showNotif('⚠️ خطا در کپی', 'warn'); } document.body.removeChild(ta);
+  });
+}
+function escH(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+/* ══ URI BUILDER ══ */
+function buildURI(uid, name, path, host, domain, ip, emoji, idx, serverAddr, paddingKey, paddingHeader) {
+  const tag = `${emoji} ${name} #${String(idx).padStart(3, '0')}`;
+  const extraObj = {xPaddingBytes: '1-1', xPaddingObfsMode: true, scMaxEachPostBytes: '1000000'};
+  if (serverAddr) extraObj.headers = {'x-host': serverAddr};
+  extraObj.xPaddingKey = paddingKey || 'AmyraxVPN';
+  extraObj.xPaddingHeader = paddingHeader || 'AmyraxVPN';
+  const encodedExtra = encodeURIComponent(JSON.stringify(extraObj));
+  const encodedPath = encodeURIComponent(path.startsWith('/') ? path : '/' + path);
+  return `vless://${uid}@${ip}:443?encryption=none&security=tls&sni=${domain}&fp=chrome&alpn=h2%2Chttp%2F1.1&insecure=1&allowInsecure=1&type=xhttp&host=${encodeURIComponent(host)}&path=${encodedPath}&mode=auto&extra=${encodedExtra}#${encodeURIComponent(tag)}`;
+}
+
+function makeConfig(uid, name, path, host, sni, ip, idx, isNormalMode, serverAddr, paddingKey, paddingHeader) {
+  const meta = getDomainMeta(sni);
+  return {
+    domain: sni, ip, emoji: meta.emoji, label: meta.label,
+    isNormal: isNormalMode, serverAddr: serverAddr || '',
+    name: `${meta.emoji} ${name} #${String(idx).padStart(3, '0')}`,
+    config: buildURI(uid, name, path, host, sni, ip, meta.emoji, idx, serverAddr, paddingKey, paddingHeader)
+  };
+}
+
+/* ══ FAVORITES ══ */
+let favs = new Set(JSON.parse(localStorage.getItem('ax8-fav') || '[]'));
+function toggleFav(idx, btn) {
+  if (favs.has(idx)) { favs.delete(idx); btn.classList.remove('on'); btn.textContent = '☆'; btn.closest('.cfgcard').classList.remove('starred'); }
+  else { favs.add(idx); btn.classList.add('on'); btn.textContent = '⭐'; btn.closest('.cfgcard').classList.add('starred'); const r = btn.getBoundingClientRect(); particles(r.left + r.width / 2, r.top + 10, 10); snd('star'); }
+  localStorage.setItem('ax8-fav', JSON.stringify([...favs]));
+  updateStarCount();
+  const ftc = document.getElementById('ftc'); if (ftc) ftc.textContent = favs.size;
+}
+function updateStarCount() { document.getElementById('s-stars').textContent = favs.size; document.getElementById('s-stars').dataset.target = favs.size; }
+
+/* ══ BATCH SELECT ══ */
+let batchMode = false; let selected = new Set();
+function toggleBatch(btn) {
+  batchMode = !batchMode; btn.classList.toggle('active', batchMode);
+  btn.textContent = batchMode ? '✕ لغو انتخاب' : '☑ انتخاب چندتایی';
+  selected.clear();
+  document.querySelectorAll('.cfcheck').forEach(c => { c.classList.toggle('show', batchMode); c.classList.remove('checked'); });
+  document.querySelectorAll('.cfgcard').forEach(c => c.classList.remove('selected'));
+  const bab = document.getElementById('batchActBar'); if (bab) bab.classList.remove('show');
+}
+function toggleSelect(idx, card) {
+  if (!batchMode) return;
+  const check = card.querySelector('.cfcheck');
+  if (selected.has(idx)) { selected.delete(idx); card.classList.remove('selected'); check.classList.remove('checked'); }
+  else { selected.add(idx); card.classList.add('selected'); check.classList.add('checked'); }
+  const bab = document.getElementById('batchActBar');
+  if (bab) { bab.classList.toggle('show', selected.size > 0); const bc = document.getElementById('batchCount'); if (bc) bc.textContent = `${selected.size} انتخاب شده`; }
+}
+function copySelected() { if (!selected.size) { showNotif('⚠️ چیزی انتخاب نشده', 'warn'); return; } const lines = [...selected].map(i => generatedConfigs[i]?.config).filter(Boolean).join('\n'); copyText(lines, null); showNotif(`✅ ${selected.size} کانفیگ کپی شد`, 'success'); }
+function downloadSelected() { if (!selected.size) { showNotif('⚠️ چیزی انتخاب نشده', 'warn'); return; } const lines = [...selected].map(i => generatedConfigs[i]?.config).filter(Boolean).join('\n'); triggerDL(lines, `AmyraxVPN_Selected_${Date.now()}.txt`, 'text/plain'); showNotif(`💾 ${selected.size} کانفیگ دانلود شد`, 'success'); snd('success'); }
+
+/* ══ SEARCH ══ */
+function filterConfigs(q) {
+  const sq = q.toLowerCase();
+  document.querySelectorAll('.cfgcard').forEach(card => {
+    const t = (card.querySelector('.cfname')?.textContent + card.querySelector('.cfsub')?.textContent).toLowerCase();
+    card.style.display = (!sq || t.includes(sq)) ? '' : 'none';
+  });
+}
+
+/* ══ DOWNLOAD HELPERS ══ */
+let generatedConfigs = [];
+let _lastName = '', _lastServerAddr = '';
+
+function triggerDL(content, filename, mime) {
+  const blob = content instanceof Blob ? content : new Blob([content], {type: mime + ';charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+}
+function copyAll() { copyText(generatedConfigs.map(c => c.config).join('\n'), null); }
+function dlURIs() { const name = _lastName || 'Config'; triggerDL(`# AmyraxVPN NEXUS V8\n# ${BRAND.copy}\n\n` + generatedConfigs.map(c => c.config).join('\n'), `AmyraxVPN_URI_${name}_${Date.now()}.txt`, 'text/plain'); showNotif('💾 TXT دانلود شد', 'success'); snd('success'); }
+function dlFavs() { if (!favs.size) { showNotif('⭐ فاوریتی ندارید', 'warn'); return; } const lines = generatedConfigs.filter((_, i) => favs.has(i)).map(c => c.config).join('\n'); triggerDL(lines, `AmyraxVPN_Favorites_${Date.now()}.txt`, 'text/plain'); showNotif(`⭐ ${favs.size} فاوریت دانلود شد`, 'success'); snd('success'); }
+async function dlZIP() {
+  if (!generatedConfigs.length) { showNotif('⚠️ ابتدا کانفیگ بسازید', 'warn'); return; }
+  const name = _lastName || 'Config';
+  showNotif(`📦 در حال ساخت ZIP · ${generatedConfigs.length} کانفیگ...`, 'info', 3000);
+  const zip = new JSZip();
+  zip.file('URI_List.txt', generatedConfigs.map(c => c.config).join('\n'));
+  zip.file('README.txt', `AmyraxVPN NEXUS V8\n${BRAND.copy}\n\nURI_List.txt → ${generatedConfigs.length} VLESS URI\n`);
+  const blob = await zip.generateAsync({type: 'blob', compression: 'DEFLATE', compressionOptions: {level: 9}});
+  triggerDL(blob, `AmyraxVPN_${name}_V8_${Date.now()}.zip`, 'application/zip');
+  showNotif(`📦 ZIP · ${generatedConfigs.length} کانفیگ دانلود شد!`, 'success', 5000); snd('success');
+  bnotif('AmyraxVPN NEXUS V8', `📦 ${generatedConfigs.length} VLESS URI دانلود شد`);
+}
+
+/* ══ DASHBOARD ══ */
+function renderDash(configs) {
+  const domainCounts = {}; configs.forEach(c => { domainCounts[c.domain] = (domainCounts[c.domain] || 0) + 1; });
+  const max = Math.max(...Object.values(domainCounts));
+  const domColors = ['#00f5e4', '#8000ff', '#ff005e', '#00ff6a', '#ff8c00', '#ffd700', '#00d4ff', '#ff3366', '#b060ff', '#00ff88', '#ffb800', '#a0ff00', '#ff00ff'];
+  const rows = Object.entries(domainCounts).map(([d, n], i) => {
+    const meta = getDomainMeta(d);
+    return `<div class="bar-row">
+      <div class="bar-label" title="${d}">${meta.emoji} ${d.split('.')[0]}</div>
+      <div class="bar-track"><div class="bar-fill" data-w="${(n/max*100).toFixed(0)}" style="background:${domColors[i%domColors.length]};box-shadow:0 0 6px ${domColors[i%domColors.length]}44;"></div></div>
+      <div class="bar-val">${n}</div>
+    </div>`;
+  }).join('');
+  const uniqueIPs = [...new Set(configs.map(c => c.ip))];
+  const ipRows = uniqueIPs.slice(0, 8).map((ip, i) => `<div class="bar-row"><div class="bar-label">${ip}</div><div class="bar-track"><div class="bar-fill" data-w="${60+Math.random()*40}" style="background:${domColors[i%domColors.length]};"></div></div><div class="bar-val">${configs.filter(c=>c.ip===ip).length}</div></div>`).join('');
+  return `<div class="stats-dash">
+    <div class="dash-card"><div class="dash-title">📊 Domain Distribution</div>${rows}</div>
+    <div class="dash-card"><div class="dash-title">🌐 IP Nodes (${uniqueIPs.length})</div>${ipRows}${uniqueIPs.length>8?`<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--textm);margin-top:10px;text-align:center">+ ${uniqueIPs.length-8} more nodes</div>`:''}</div>
+  </div>`;
+}
+
+/* ══ RENDER RESULTS ══ */
+function renderResults(configs, name, serverAddr) {
+  const container = document.getElementById('results');
+  const tColors = {'xhttp': '#00f5e4'};
+
+  const cardsHTML = configs.map((c, i) => {
+    const lat = Math.floor(25 + Math.random() * 220);
+    const latW = Math.max(8, Math.min(100, 100 - lat * .4));
+    const latCls = lat < 70 ? 'lat-g' : lat < 140 ? 'lat-m' : 'lat-b';
+    const latGrad = lat < 70 ? 'linear-gradient(90deg,var(--d),#00ff88)' : lat < 140 ? 'linear-gradient(90deg,var(--e),#ffd700)' : 'linear-gradient(90deg,var(--c),var(--b))';
+    const starred = favs.has(i);
+    const modeBadge = c.isNormal
+      ? `<span style="font-size:8px;padding:1px 6px;border-radius:4px;background:rgba(0,255,106,0.1);color:#00ff6a;border:1px solid rgba(0,255,106,0.3);">🌐 Normal</span>`
+      : `<span style="font-size:8px;padding:1px 6px;border-radius:4px;background:rgba(255,140,0,0.1);color:#ff8c00;border:1px solid rgba(255,140,0,0.3);">🛡️ Shecan</span>`;
+    return `<div class="cfgcard${starred ? ' starred' : ''}" style="animation-delay:${Math.min(i*.008,1.2)}s" onclick="toggleSelect(${i},this)">
+      <div class="cftop">
+        <div class="cfcheck" id="chk${i}"></div>
+        <div class="cfemoji">${c.emoji}</div>
+        <div class="cfmeta">
+          <div class="cfname">${c.name}</div>
+          <div class="cfsub" style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:3px;">
+            ${modeBadge}
+            <span style="font-size:8px;padding:1px 7px;border-radius:4px;border:1px solid #00f5e455;color:#00f5e4;background:#00f5e411;">XHTTP</span>
+            ${c.serverAddr ? `<span style="font-size:8px;padding:1px 7px;border-radius:4px;border:1px solid rgba(255,140,0,.3);color:#ff8c00;background:rgba(255,140,0,.08);" title="Backend x-host">🖥️ ${c.serverAddr.replace(/^https?:\/\//,'').split(':')[0].substring(0,22)}</span>` : ''}
+            <span style="opacity:.45;font-size:9px;">SNI: ${c.domain}${!c.isNormal ? ' · IP: ' + c.ip : ''}</span>
+          </div>
+        </div>
+        <div class="cfacts">
+          <span class="latbadge ${latCls}">${lat}ms</span>
+          <button class="cfbtn st${starred ? ' on' : ''}" onclick="event.stopPropagation();toggleFav(${i},this)">${starred ? '⭐' : '☆'}</button>
+          <button class="cfbtn cp" onclick="event.stopPropagation();copyText(window.__cfgs[${i}].config,this)">Copy</button>
+        </div>
+      </div>
+      <div class="latrow"><div class="latbar"><div class="lat-fill" data-w="${latW}" style="background:${latGrad}"></div></div></div>
+      <div class="cfstr" onclick="event.stopPropagation();copyText(window.__cfgs[${i}].config,null)">${escH(c.config)}</div>
+    </div>`;
+  }).join('');
+
+  const uniqueDomains = [...new Set(configs.map(c => c.domain))];
+  const groupedHTML = uniqueDomains.map(dom => {
+    const dcfgs = configs.filter(c => c.domain === dom);
+    const meta = getDomainMeta(dom);
+    const groupCards = dcfgs.map(c => {
+      const i = configs.indexOf(c); const lat = Math.floor(25 + Math.random() * 200); const latW = Math.max(8, 100 - lat * .4);
+      const latGrad = lat < 70 ? 'linear-gradient(90deg,var(--d),#00ff88)' : lat < 140 ? 'linear-gradient(90deg,var(--e),#ffd700)' : 'linear-gradient(90deg,var(--c),var(--b))';
+      return `<div class="cfgcard" style="margin-top:3px">
+        <div class="cftop">
+          <div class="cfmeta"><div class="cfname">${c.name}</div><div class="cfsub">IP: ${c.ip}</div></div>
+          <div class="cfacts">
+            <span class="latbadge ${lat<70?'lat-g':lat<140?'lat-m':'lat-b'}">${lat}ms</span>
+            <button class="cfbtn cp" onclick="copyText(window.__cfgs[${i}].config,this)">Copy</button>
+          </div>
+        </div>
+        <div class="latrow"><div class="latbar"><div class="lat-fill" data-w="${latW}" style="background:${latGrad}"></div></div></div>
+      </div>`;
+    }).join('');
+    return `<div class="group-section">
+      <div class="group-header" onclick="toggleGroup(this)">
+        <div class="group-emoji">${meta.emoji}</div>
+        <div class="group-name">${meta.label}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--textm)">${dom}</div>
+        <div class="group-count">${dcfgs.length}</div>
+        <div class="group-toggle">▼</div>
+      </div>
+      <div class="group-body">${groupCards}</div>
+    </div>`;
+  }).join('');
+
+  const favList = configs.filter((_, i) => favs.has(i));
+  const favHTML = favList.length === 0
+    ? '<div class="fav-empty">⭐ هنوز فاوریتی ندارید<br><small>روی ☆ کنار هر کانفیگ کلیک کنید</small></div>'
+    : favList.map(c => {
+        const i = configs.indexOf(c);
+        return `<div class="cfgcard starred" style="margin-bottom:9px">
+          <div class="cftop">
+            <div class="cfemoji">${c.emoji}</div>
+            <div class="cfmeta"><div class="cfname">⭐ ${c.name}</div><div class="cfsub">SNI: ${c.domain} · IP: ${c.ip}</div></div>
+            <div class="cfacts"><button class="cfbtn cp" onclick="copyText(window.__cfgs[${i}].config,this)">Copy</button></div>
+          </div>
+        </div>`;
+      }).join('');
+
+  const uniqueIPs = [...new Set(configs.map(c => c.ip))];
+
+  container.innerHTML = `
+    <div class="tabbar">
+      <button class="tabbtn active" data-tab="uri" onclick="switchTab('uri')">🔗 VLESS URI<span class="tbadge">${configs.length}</span></button>
+      <button class="tabbtn" data-tab="groups" onclick="switchTab('groups')">📂 Grouped<span class="tbadge">${uniqueDomains.length}</span></button>
+      <button class="tabbtn" data-tab="stats" onclick="switchTab('stats')">📊 Stats</button>
+      <button class="tabbtn" data-tab="favs" onclick="switchTab('favs')">⭐ Favs<span class="tbadge" id="ftc">${favs.size}</span></button>
+    </div>
+
+    <div class="tpanel active" data-panel="uri">
+      <div class="search-row">
+        <div class="srch-wrap"><span class="srch-ico">🔍</span><input class="search-inp" placeholder="جستجو در کانفیگ‌ها..." oninput="filterConfigs(this.value)"></div>
+        <button class="batch-btn" id="batchToggle" onclick="toggleBatch(this)">☑ انتخاب چندتایی</button>
+      </div>
+      <div class="batch-actbar" id="batchActBar">
+        <button class="abtn cyan" onclick="copySelected()">📋 کپی انتخاب‌شده</button>
+        <button class="abtn green" onclick="downloadSelected()">💾 دانلود انتخاب‌شده</button>
+        <div class="batch-count" id="batchCount">0 انتخاب شده</div>
+      </div>
+      <div class="actbar">
+        <button class="abtn green" onclick="copyAll()">📋 کپی همه</button>
+        <button class="abtn cyan" onclick="dlURIs()">💾 دانلود TXT</button>
+        <button class="abtn purple" onclick="dlZIP()">📦 ZIP کامل</button>
+        <button class="abtn pink" onclick="dlFavs()">⭐ فاوریت‌ها</button>
+      </div>
+      <div class="cfglist">${cardsHTML}</div>
+    </div>
+
+    <div class="tpanel" data-panel="groups">
+      <div class="actbar">
+        <button class="abtn cyan" onclick="copyAll()">📋 کپی همه</button>
+        <button class="abtn purple" onclick="dlZIP()">📦 ZIP</button>
+      </div>
+      ${groupedHTML}
+    </div>
+
+    <div class="tpanel" data-panel="stats">
+      ${renderDash(configs)}
+      <div class="gcard" style="margin-top:18px;opacity:1;animation:none;">
+        <div class="slbl" style="margin-bottom:16px;"><div class="slbl-ico">🔢</div><span class="slbl-txt">Summary</span><div class="slbl-line"></div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;text-align:center;">
+          ${[
+            ['کل کانفیگ', configs.length, 'var(--a)'],
+            ['SNI دامنه', uniqueDomains.length, 'var(--b)'],
+            ['آدرس IP', uniqueIPs.length, 'var(--c)'],
+            ['فاوریت‌ها', favs.size, 'var(--e)'],
+            ['سرور', serverAddr ? '🇫🇷 CH' : '—', 'var(--e)'],
+            ['پروتکل', 'VLESS', 'var(--a)']
+          ].map(([l, v, c]) => `<div style="background:var(--glass2);border:1px solid rgba(255,255,255,0.042);border-radius:var(--rs);padding:18px;position:relative;overflow:hidden;"><div style="position:absolute;top:0;left:0;right:0;height:1px;background:${c};opacity:.4;"></div><div style="font-family:'Oxanium',sans-serif;font-size:24px;font-weight:800;color:${c};text-shadow:0 0 20px ${c};">${v}</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--textm);margin-top:6px;">${l}</div></div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="tpanel" data-panel="favs">
+      <div class="fav-hdr">
+        <div class="slbl" style="margin:0"><div class="slbl-ico">⭐</div><span class="slbl-txt">Favorites</span></div>
+        <button class="abtn pink" onclick="dlFavs()">💾 دانلود فاوریت‌ها</button>
+      </div>
+      <div id="favListEl">${favHTML}</div>
+    </div>
+  `;
+
+  window.__cfgs = configs;
+  document.getElementById('s-total').textContent = configs.length;
+  document.getElementById('s-total').dataset.target = configs.length;
+  document.getElementById('s-domains').textContent = uniqueDomains.length;
+  document.getElementById('s-domains').dataset.target = uniqueDomains.length;
+  document.getElementById('s-ips').textContent = uniqueIPs.length;
+  document.getElementById('s-ips').dataset.target = uniqueIPs.length;
+  setTimeout(() => { document.querySelectorAll('.bar-fill,.lat-fill').forEach(el => { el.style.width = el.dataset.w + '%'; }); }, 350);
+}
+
+/* ══ TABS ══ */
+let activeTab = 'uri';
+function switchTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.tabbtn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tpanel').forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
+  if (tab === 'stats') setTimeout(() => { document.querySelectorAll('.bar-fill,.lat-fill').forEach(el => { el.style.width = el.dataset.w + '%'; }); }, 100);
+  snd('click');
+}
+
+function toggleGroup(hdr) {
+  hdr.classList.toggle('open');
+  const body = hdr.nextElementSibling; body.classList.toggle('open');
+  if (body.classList.contains('open')) { setTimeout(() => { body.querySelectorAll('.lat-fill').forEach(el => { el.style.width = el.dataset.w + '%'; }); }, 150); }
+}
+
+/* ══ GENERATE ══ */
+document.getElementById('generateBtn').addEventListener('click', async function() {
+  const uid = document.getElementById('uid').value.trim();
+  const name = document.getElementById('cfgName').value.trim();
+  const path = document.getElementById('cfgPath').value.trim();
+  const serverAddr = document.getElementById('cfgServerAddr').value.trim();
+  const host = document.getElementById('cfgHost').value.trim();
+  const paddingKey = document.getElementById('cfgPaddingKey').value.trim();
+  const paddingHeader = document.getElementById('cfgPaddingHeader').value.trim();
+
+  const rawSNIs = document.getElementById('sniList').value.trim().split('\n').map(d => d.trim().replace(/^https?:\/\//, '')).filter(Boolean);
+  const rawIPs = currentMode === 'shecan' ? document.getElementById('ipList').value.trim().split('\n').map(i => i.trim()).filter(Boolean) : [];
+
+  function hlf(id, msg) {
+    const el = document.getElementById(id); if (!el) return;
+    el.style.borderColor = 'var(--c)'; el.style.boxShadow = '0 0 0 3px rgba(255,0,94,.14)';
+    el.focus(); showNotif('⚠️ ' + msg, 'warn'); setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2500);
+  }
+  if (!uid) { hlf('uid', 'UUID را وارد کنید'); snd('error'); return; }
+  if (!name) { hlf('cfgName', 'نام کانفیگ را وارد کنید'); snd('error'); return; }
+  if (!path) { hlf('cfgPath', 'مسیر را وارد کنید'); snd('error'); return; }
+  if (!host) { hlf('cfgHost', 'هاست / دامنه نتلیفای را وارد کنید'); snd('error'); return; }
+  if (!rawSNIs.length) { showNotif('⚠️ حداقل یک SNI وارد کنید', 'warn'); snd('error'); return; }
+  if (currentMode === 'shecan' && !rawIPs.length) { showNotif('⚠️ حداقل یک IP وارد کنید (Shecan)', 'warn'); snd('error'); return; }
+
+  const btn = this; btn.disabled = true;
+  const pw = document.getElementById('pbarWrap'); const pb = document.getElementById('pbar'); const gt = document.getElementById('gbtxt');
+  pw.classList.add('on'); clearTerm();
+
+  const totalExpected = currentMode === 'shecan' ? (rawSNIs.length * rawIPs.length + rawSNIs.length) : rawSNIs.length;
+  const steps = [
+    {p: 12, msg: '🔧 بررسی پارامترها...', c: 'tinf'},
+    {p: 30, msg: `🌐 پردازش ${rawSNIs.length} دامنه...`, c: 'tinf'},
+    {p: 60, msg: '📡 ساخت VLESS URIها...', c: 'tinf'},
+    {p: 88, msg: '📦 آماده‌سازی کانفیگ‌ها...', c: 'tok'},
+    {p: 100, msg: `✅ ${totalExpected} کانفیگ آماده!`, c: 'tok'},
+  ];
+  for (const s of steps) { pb.style.width = s.p + '%'; gt.textContent = s.msg; tlog(s.msg.replace(/^[\p{Emoji}\s]+/u, ''), s.c); await new Promise(r => setTimeout(r, 140)); }
+
+  _lastName = name; _lastServerAddr = serverAddr || '';
+  let idx = 1; generatedConfigs = [];
+
+  if (currentMode === 'shecan') {
+    for (const sni of rawSNIs) for (const ip of rawIPs) {
+      generatedConfigs.push(makeConfig(uid, name, path, host, sni, ip, idx, false, serverAddr, paddingKey, paddingHeader));
+      idx++;
+    }
+    for (const sni of rawSNIs) {
+      generatedConfigs.push(makeConfig(uid, name, path, host, sni, sni, idx, true, serverAddr, paddingKey, paddingHeader));
+      idx++;
+    }
+  } else {
+    for (const sni of rawSNIs) {
+      generatedConfigs.push(makeConfig(uid, name, path, host, sni, sni, idx, true, serverAddr, paddingKey, paddingHeader));
+      idx++;
+    }
+  }
+
+  await new Promise(r => setTimeout(r, 200));
+  btn.disabled = false; pw.classList.remove('on'); pb.style.width = '0';
+  gt.textContent = `✅ ${generatedConfigs.length} CONFIG READY!`;
+  setTimeout(() => updateGenBtn(), 4200);
+
+  const r = btn.getBoundingClientRect();
+  particles(r.left + r.width / 2, r.top + r.height / 2, 30);
+  confetti(r.left + r.width / 2, r.top + r.height / 2);
+  snd('success');
+  showNotif(`🚀 ${generatedConfigs.length} کانفیگ آماده شد!`, 'success', 5000);
+  bnotif('AmyraxVPN NEXUS V8 ✅', `${generatedConfigs.length} کانفیگ آماده · ZIP بگیرید!`);
+  renderResults(generatedConfigs, name, serverAddr);
+  setTimeout(() => document.getElementById('results').scrollIntoView({behavior: 'smooth', block: 'start'}), 320);
+});
+
+/* ══ KEYBOARD SHORTCUTS ══ */
+['uid', 'cfgName', 'cfgPath', 'cfgServerAddr', 'cfgHost'].forEach(id => {
+  document.getElementById(id)?.addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('generateBtn').click(); });
+});
+document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') document.getElementById('generateBtn').click(); });
+
+/* ══ THEME SWITCHER ══ */
+const themes = [
+  {n: 'NEXUS', a: '#00f5e4', b: '#8000ff', c: '#ff005e', d: '#00ff6a'},
+  {n: 'PLASMA', a: '#ff6b35', b: '#ff006e', c: '#ff9f00', d: '#ffd700'},
+  {n: 'MATRIX', a: '#00ff6a', b: '#00ff99', c: '#00d4ff', d: '#b8ff3c'},
+  {n: 'ROYAL', a: '#c084fc', b: '#7c3aed', c: '#f472b6', d: '#60a5fa'},
+  {n: 'BLOOD', a: '#ff3366', b: '#ff0080', c: '#ff6b00', d: '#ffb800'},
+  {n: 'SOLAR', a: '#e8ff00', b: '#ff8c00', c: '#ff005e', d: '#00f5e4'},
+];
+let ti = 0;
+document.getElementById('themeBtn').addEventListener('click', () => {
+  ti = (ti + 1) % themes.length; const t = themes[ti]; const rs = document.documentElement.style;
+  rs.setProperty('--a', t.a); rs.setProperty('--b', t.b); rs.setProperty('--c', t.c); rs.setProperty('--d', t.d);
+  rs.setProperty('--ag', t.a + '1e'); rs.setProperty('--bg2', t.b + '1e');
+  document.getElementById('cdot').style.background = t.a; document.getElementById('cdot').style.boxShadow = `0 0 12px ${t.a},0 0 24px ${t.a}`;
+  document.getElementById('cring').style.borderColor = t.a + '80';
+  showNotif(`🎨 تم ${t.n} فعال شد`, 'info', 2000); snd('click');
+});
+
+/* ══ FOOTER ══ */
+document.getElementById('ftags').innerHTML = ['@AmyraxVPN', '@AmyraxConfig', 'V8 · NEXUS', '🇫🇷 France', 'VLESS · TLS', '49 SNI / 37 IPs', 'ALL & BEST', 'ZIP Export', 'Auto Fill', '6 Themes'].map(t => `<span class="ftag">${t}</span>`).join('');
+document.getElementById('fcopy').textContent = BRAND.copy;
+</script>
+</body>
+</html>
